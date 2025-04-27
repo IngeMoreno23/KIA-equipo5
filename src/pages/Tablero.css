@@ -1,0 +1,258 @@
+/* Variables globales */
+:root {
+    --primary-color: #0030b9;
+    --secondary-color: #e0e0e0;
+    --accent-color: #003366;
+    --bg-color: #f5f5f7;
+    --text-color: #333;
+    --border-radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+  }
+  
+  /* Estilos generales */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .tablero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--text-color);
+  }
+  
+  .nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-modificar, .btn-registrar {
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  
+  .btn-modificar {
+    background-color: #000;
+    color: white;
+  }
+  
+  .btn-registrar {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .btn-modificar:hover, .btn-registrar:hover {
+    opacity: 0.9;
+  }
+  
+  /* Contenido principal */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Sección de resumen y gráficas */
+  .resumen {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    position: relative;
+  }
+  
+  .grafica {
+    min-width: 250px;
+    height: 250px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 15px;
+    border: 1px solid var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* Controles de navegación para gráficas */
+  .resumen-controls {
+    position: absolute;
+    right: 0;
+    top: -40px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .resumen-controls button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--secondary-color);
+    background: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Acceso Rápido */
+  .acceso-rapido {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filtros button {
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--secondary-color);
+    background-color: white;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .filtros button:first-child {
+    background-color: black;
+    color: white;
+    border: none;
+  }
+  
+  .filtros button:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  /* Lista de Bitácoras */
+  .lista-bitacoras {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .bitacora {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--secondary-color);
+    transition: var(--transition);
+  }
+  
+  .bitacora:hover {
+    background-color: #f9f9f9;
+  }
+  
+  /* Icono para bitácoras (simulado) */
+  .bitacora::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    background-color: #4CAF50; /* Color para Excel, puedes variar */
+    border-radius: 4px;
+  }
+  
+  /* Footer */
+  .footer {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid var(--secondary-color);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+  }
+  
+  .site-name {
+    font-weight: 500;
+  }
+  
+  .topics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .social-icons a {
+    color: var(--text-color);
+    font-size: 20px;
+  }
+  
+  /* Media queries para responsive */
+  @media (max-width: 768px) {
+    .resumen {
+      flex-direction: column;
+    }
+    
+    .grafica {
+      width: 100%;
+    }
+    
+    .footer {
+      grid-template-columns: 1fr;
+    }
+    
+    .topics {
+      grid-template-columns: 1fr;
+    }
+    
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .nav {
+      width: 100%;
+    }
+    
+    .btn-modificar, .btn-registrar {
+      width: 100%;
+    }
+  }
