@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Residuos - KIA</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <h1>Gestión de Residuos - KIA</h1>
+      <div class="usuario"><strong>Oliver Moreno Ibarra</strong></div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#registro">Registrar Residuo</a></li>
+        <li><a href="#resumen">Resumen</a></li>
+        <li><a href="#reportes">Reportes</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="registro" class="card">
+      <h2>Registrar Residuo</h2>
+      <form id="formulario-residuo">
+        <label for="tipo">Tipo de residuo:</label>
+        <input type="text">
+  <form id="formulario-residuo">
+  
+
+  <label for="contenedor">Tipo de contenedor ❔</label>
+  <input type="text" id="contenedor" name="contenedor" required />
+
+  <label for="cantidad">Cantidad generada (toneladas) ❔</label>
+  <input type="number" id="cantidad" name="cantidad" step="0.01" required />
+
+  <label for="area">Área o proceso de generación ❔</label>
+  <input type="text" id="area" name="area" required />
+
+  <label for="fecha-ingreso">Fecha de ingreso ❔</label>
+  <input type="date" id="fecha-ingreso" name="fecha-ingreso" required />
+
+  <label for="fecha-salida">Fecha de salida ❔</label>
+  <input type="date" id="fecha-salida" name="fecha-salida" required />
+
+  <label for="articulo">Artículo 71 fracción I inciso (e) ❔</label>
+  <input type="text" id="articulo" name="articulo" required />
+
+  <label for="razon-social">Nombre, denominación o razón social ❔</label>
+  <input type="text" id="razon-social" name="razon-social" required />
+
+  <label for="aut-semarnat">Número de autorización SEMARNAT ❔</label>
+  <input type="text" id="aut-semarnat" name="aut-semarnat" required />
+
+  <label for="aut-sct">Número de autorización SCT ❔</label>
+  <input type="text" id="aut-sct" name="aut-sct" required />
+
+  <label for="razon-social-2">Nombre, denominación o razón social (Destino) ❔</label>
+  <input type="text" id="razon-social-2" name="razon-social-2" required />
+
+  <label for="aut-destino">Número de autorización destino ❔</label>
+  <input type="text" id="aut-destino" name="aut-destino" required />
+
+  <label for="responsable">Nombre del responsable técnico ❔</label>
+  <input type="text" id="responsable" name="responsable" required />
+
+  <button type="submit">Registrar</button>
+</form>
+</form>
+
+       
+
+       
+      </form>
+    </section>
+
+    <section id="resumen" class="card">
+      <h2>Resumen de Residuos</h2>
+      <div id="lista-residuos"></div>
+    </section>
+
+    <section id="reportes" class="card">
+      <h2>Reportes Generales</h2>
+      <button onclick="generarReporte()">Generar Reporte</button>
+      <pre id="reporte"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <img src="assets/kia-logo.png" alt="Logo de KIA" class="logo-kia" />
+    <p>&copy; 2025 KIA Motors México</p>
+  </footer>
+
+  <script>
+    const residuos = [];
+
+    document.getElementById("formulario-residuo").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const tipo = document.getElementById("tipo").value;
+      const cantidad = parseFloat(document.getElementById("cantidad").value);
+      const fecha = document.getElementById("fecha").value;
+
+      residuos.push({ tipo, cantidad, fecha });
+      actualizarLista();
+      this.reset();
+    });
+
+    function actualizarLista() {
+      const contenedor = document.getElementById("lista-residuos");
+      contenedor.innerHTML = "";
+      residuos.forEach((residuo, index) => {
+        const div = document.createElement("div");
+        div.textContent = `${index + 1}. ${residuo.tipo} - ${residuo.cantidad}kg - ${residuo.fecha}`;
+        contenedor.appendChild(div);
+      });
+    }
+
+    function generarReporte() {
+      const total = residuos.reduce((sum, r) => sum + r.cantidad, 0);
+      const reporte = `Total de residuos registrados: ${residuos.length}\nTotal en kg: ${total}`;
+      document.getElementById("reporte").textContent = reporte;
+    }
+
+    // Resaltado del enlace activo
+    window.addEventListener("scroll", () => {
+      const secciones = document.querySelectorAll("main section");
+      const links = document.querySelectorAll("nav a");
+
+      let seccionActual = "";
+
+      secciones.forEach((section) => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        if (pageYOffset >= top - height / 3) {
+          seccionActual = section.getAttribute("id");
+        }
+      });
+
+      links.forEach((link) => {
+        link.classList.remove("activo");
+        if (link.getAttribute("href") === `#${seccionActual}`) {
+          link.classList.add("activo");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
