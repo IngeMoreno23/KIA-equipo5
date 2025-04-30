@@ -1,4 +1,3 @@
-/* Estilos generales */
 * {
   margin: 0;
   padding: 0;
@@ -62,6 +61,11 @@ h1 {
   margin-bottom: 40px;
 }
 
+h2 {
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
 /* Formulario */
 .formulario-residuo {
   width: 100%;
@@ -82,7 +86,7 @@ label {
 input[type="text"],
 input[type="number"],
 input[type="date"],
-select {
+.select-selected {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ddd;
@@ -120,6 +124,7 @@ select {
 /* Estilo para los selectores desplegables */
 .select-container {
   position: relative;
+  user-select: none;
 }
 
 .select-selected {
@@ -131,12 +136,15 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
-.select-selected::after {
-  content: "";
+.dropdown-arrow {
+  position: relative;
+  display: inline-block;
   width: 0;
   height: 0;
+  margin-left: 10px;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #555;
@@ -150,9 +158,10 @@ select {
   right: 0;
   z-index: 99;
   border: 1px solid #ddd;
-  border-top: none;
+  border-radius: 0 0 4px 4px;
   max-height: 250px;
   overflow-y: auto;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .select-items div {
@@ -161,12 +170,116 @@ select {
   border-bottom: 1px solid #ddd;
 }
 
+.select-option {
+  display: flex;
+  align-items: center;
+}
+
+.select-option.option-selected {
+  background-color: #e6f0ff;
+  font-weight: 500;
+}
+
+.checkbox {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin-right: 10px;
+  background-color: white;
+}
+
+.select-option.option-selected .checkbox {
+  background-color: #0000ff;
+  color: white;
+  border-color: #0000ff;
+}
+
 .select-items div:hover {
   background-color: #f1f1f1;
 }
 
+.select-items div:last-child {
+  border-bottom: none;
+}
+
 .select-hide {
   display: none;
+}
+
+/* Campo Otros */
+.otros-field {
+  margin-top: 10px;
+}
+
+.otros-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #0000ff;
+  border-radius: 4px;
+  background-color: #f5f8ff;
+}
+
+/* Características del residuo - etiquetas */
+.etiquetas-container {
+  margin-bottom: 30px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+}
+
+.etiquetas-desc {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.etiquetas-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .etiquetas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .etiquetas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.etiqueta-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: white;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.etiqueta-item:hover {
+  border-color: #0000ff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.etiqueta-selected {
+  background-color: #0000ff;
+  color: white;
+  border-color: #0000ff;
+  box-shadow: 0 2px 5px rgba(0,0,255,0.3);
 }
 
 /* Botón de registro */
@@ -179,6 +292,10 @@ select {
   cursor: pointer;
   float: right;
   margin-top: 20px;
+}
+
+.btn-registrar-form:hover {
+  background-color: #333;
 }
 
 /* Footer */
@@ -247,4 +364,235 @@ select {
     flex-direction: column;
     gap: 20px;
   }
+  /* Añadir a tu archivo CSS existente */
+
+/* Estilos para campos inválidos */
+.invalid-field label {
+  color: #e53935;
+}
+
+.input-invalid {
+  border-color: #e53935 !important;
+  background-color: rgba(229, 57, 53, 0.05) !important;
+}
+
+.error-message {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Contenedor para el botón de envío */
+.submit-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 30px;
+}
+
+/* Error Overlay */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(185, 9, 9, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.error-modal {
+  background-color: rgb(160, 18, 18);
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(170, 13, 13, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.error-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: #e53935;
+  color: rgb(141, 12, 12);
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.error-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ca0707;
+}
+
+.error-message-modal {
+  color: #aa1717;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.error-close-btn {
+  background-color: #e53935;
+  color: rgb(167, 21, 21);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.error-close-btn:hover {
+  background-color: #c62828;
+}
+
+/* Estilo para botón deshabilitado */
+.btn-disabled {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Campos requeridos con asterisco */
+.form-group label::after {
+  content: "";
+}
+
+.form-group label[for]::after {
+  content: "";
+}
+/* Añadir a tu archivo CSS existente */
+
+/* Estilos para campos inválidos */
+.invalid-field label {
+  color: #e53935;
+}
+
+.input-invalid {
+  border-color: #e53935 !important;
+  background-color: rgba(252, 8, 8, 0.05) !important;
+}
+
+.error-message {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Contenedor para el botón de envío */
+.submit-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 30px;
+}
+
+/* Error Overlay - Estilo para el modal independiente */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(179, 7, 7, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.error-modal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(248, 2, 2, 0.3);
+  width: 350px;
+  max-width: 90%;
+  padding: 25px;
+  text-align: center;
+  position: relative;
+  border: 2px solid #e53935;
+  animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.error-icon {
+  width: 70px;
+  height: 70px;
+  background-color: #e53935;
+  color: rgba(238, 5, 5, 0.836);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0 auto 20px;
+}
+
+.error-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #e53935;
+  margin-bottom: 15px;
+}
+
+.error-message-modal {
+  font-size: 16px;
+  color: #af0b0b;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.error-close-btn {
+  background-color: #e53935;
+  color: rgb(196, 11, 11);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 30px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: inline-block;
+}
+
+.error-close-btn:hover {
+  background-color: #c62828;
+}
+
+/* Estilo para botón deshabilitado */
+.btn-disabled {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Campos requeridos con asterisco */
+.form-group label::after {
+  content: "";
+}
+
+.form-group label[for]::after {
+  content: "";
+}
 }
