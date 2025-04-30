@@ -1,16 +1,23 @@
-import './Tablero.css'; // Asegúrate de tener este archivo CSS para los estilos
+import './Tablero.css';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Tablero() {
+  const navigate = useNavigate();
+
+  // Función para manejar la navegación al registro de residuos
+  const irARegistroResiduo = () => {
+    navigate('/RegistrarResiduo');
+  };
+
   return (
     <div className="tablero-container">
-      
       {/* Header */}
       <header className="header">
         <div className="logo">KIA MOTORS</div>
         <nav className="nav">
           <button className="btn-modificar">Modificar Inputs</button>
-          <button className="btn-registrar">Registrar Residuo</button>
+          <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
         </nav>
       </header>
 
