@@ -45,7 +45,12 @@ function RegistroResiduo() {
     areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility"],
     articulo71: ['Reciclaje', 'Confinamiento', 'Coprocesamiento'],
     razonSocial: ['Servicios Ambientales Internacionales S. de RL. De C.V.1', 'ECO SERVICIOS PARA GAS SA. DE CV.', 'CONDUGAS DEL NORESTE, S.A DE C.V.'],
-    razonSocialDestino: ['SERVICIOS AMBIENTALES INTERNACIONALES S DE RL DE CV', 'ECOQUIM, S.A. DE C.V. ', 'MAQUILADORA DE LUBRICANTES, S.A. DE C.V. ']
+    autorizacionSemarnat: ["19-I-030-D-19", "19-I-009D-18", "19-I-031D-19"],
+    autorizacionSct: ["1938SAI07062011230301029", "1938NACL29052015073601001", "1938ESG28112011230301000"],
+    razonSocialDestino: ['SERVICIOS AMBIENTALES INTERNACIONALES S DE RL DE CV', 'ECOQUIM, S.A. DE C.V. ', 'MAQUILADORA DE LUBRICANTES, S.A. DE C.V. '],
+    autorizacionDestino: ["19-II-004D-2020", "19-21-PS-V-04-94", "19-IV-69-16"],
+    responsableTecnico: ['Yolanda Martinez', 'Juan Perez','Maria Lopez',"Yamileth Cuellar"],
+
   };
 
   // Definir campos requeridos
@@ -58,8 +63,10 @@ function RegistroResiduo() {
     'articulo71',
     'razonSocial',
     'autorizacionSemarnat',
+    "autorizacionSct",
     'razonSocialDestino',
-    'responsableTecnico'
+    "autorizacionDestino",
+    'responsableTecnico',
   ];
 
   // Estado para sugerencias de autocompletado
@@ -359,12 +366,12 @@ function RegistroResiduo() {
         <h2>Residuo</h2>
         
         {renderCampoAutocompletado('tipoResiduo', 'Tipo de residuo')}
-        {renderCampoDesplegable('tipoContenedor', 'Tipo de contenedor', opciones.tipoContenedor)}
+        {renderCampoAutocompletado('tipoContenedor', 'Tipo de contenedor', opciones.tipoContenedor)}
         {renderCampo('cantidadGenerada', 'Cantidad generada (toneladas)', 'number')}
-        {renderCampoDesplegable('areaGeneracion', 'Área o proceso de generación', opciones.areaGeneracion)}
+        {renderCampoAutocompletado('areaGeneracion', 'Área o proceso de generación', opciones.areaGeneracion)}
         {renderCampoFecha('fechaIngreso', 'Fecha de ingreso')}
         {renderCampoFecha('fechaSalida', 'Fecha de salida')}
-        {renderCampoDesplegable('articulo71', 'Artículo 71 fracción I inciso (e)', opciones.articulo71)}
+        {renderCampoAutocompletado('articulo71', 'Artículo 71 fracción I inciso (e)', opciones.articulo71)}
         
         <h2>Características del residuo</h2>
         <div className="etiquetas-container">
@@ -383,16 +390,16 @@ function RegistroResiduo() {
         </div>
         
         <h2>Transportista</h2>
-        {renderCampoDesplegable('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
-        {renderCampo('autorizacionSemarnat', 'Número de autorización SEMARNAT')}
-        {renderCampo('autorizacionSct', 'Número de autorización SCT')}
+        {renderCampoAutocompletado('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
+        {renderCampoDesplegable('autorizacionSemarnat', 'Número de autorización SEMARNAT', opciones.autorizacionSemarnat)}
+        {renderCampoDesplegable('autorizacionSct', 'Número de autorización SCT', opciones.autorizacionSct)}
         
         <h2>Receptor/Destino</h2>
-        {renderCampoDesplegable('razonSocialDestino', 'Nombre, denominación o razón social', opciones.razonSocialDestino)}
-        {renderCampo('autorizacionDestino', 'Número de autorización destino')}
+        {renderCampoAutocompletado('razonSocialDestino', 'Nombre, denominación o razón social', opciones.razonSocialDestino)}
+        {renderCampoDesplegable('autorizacionDestino', 'Número de autorización destino', opciones.autorizacionDestino)}
         
         <h2>Responsable</h2>
-        {renderCampo('responsableTecnico', 'Nombre del responsable técnico')}
+        {renderCampoAutocompletado('responsableTecnico', 'Nombre del responsable técnico', opciones.responsableTecnico)}
         
         <div className="submit-container">
           <button 
