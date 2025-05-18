@@ -22,7 +22,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div className="video-container">
         <video
           ref={videoRef}
@@ -62,9 +62,6 @@ function Home() {
           />
           <button className="login-button" type="submit">Entrar</button>
           {error && <div className="error-message">{error}</div>}
-          <div className="signup-link">
-            ¿No tienes una cuenta? <a href="#">Regístrate ahora</a>
-          </div>
         </form>
       </div>
     </div>

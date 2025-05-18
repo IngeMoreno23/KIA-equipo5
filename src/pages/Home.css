@@ -7,9 +7,6 @@
 
 body {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
   position: relative;
 }
@@ -61,6 +58,7 @@ body {
   right: 24px;
   margin: 0;
   box-sizing: border-box;
+  z-index: 1; /* Add this line */
 }
 
 @keyframes fadeIn {

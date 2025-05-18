@@ -19,6 +19,11 @@
   }
   
   body {
+    display: block !important;
+    justify-content: unset !important;
+    align-items: unset !important;
+    overflow: auto !important;
+    height: auto !important;
     background-color: var(--bg-color);
     color: var(--text-color);
   }
@@ -27,6 +32,8 @@
     max-width: 1280px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+    overflow: auto;
   }
   
   /* Header */
