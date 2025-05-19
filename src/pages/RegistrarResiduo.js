@@ -53,7 +53,7 @@ function RegistroResiduo() {
     'Water contaminated with paint from application to car bodies (T)'
     ],
     tipoContenedor: ['Tambo', 'Tote', 'Tarima', 'Paca', 'Pieza'],
-    areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility"],
+    areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility", "Stamping"],
     articulo71: ['Reciclaje', 'Confinamiento', 'Coprocesamiento'],
     razonSocial: ['Servicios Ambientales Internacionales S. de RL. De C.V.1', 'ECO SERVICIOS PARA GAS SA. DE CV.', 'CONDUGAS DEL NORESTE, S.A DE C.V.'],
     autorizacionSemarnat: ["19-I-030-D-19", "19-I-009D-18", "19-I-031D-19"],
@@ -231,13 +231,11 @@ function RegistroResiduo() {
 
   const handleAddTransporter = async () => {
     try {
-      // 1. Buscar transportista por nombre
       const searchPayload = { transporter_name: formData.razonSocial };
       const searchRes = await axios.post('http://localhost:3001/api/transporter/buscar', searchPayload);
 
       let transporterId;
 
-      // Si la API regresa 0, no existe, entonces creamos uno nuevo
       if (searchRes.data === 0) {
         const createPayload = {
           transporter_name: formData.razonSocial,
@@ -246,38 +244,36 @@ function RegistroResiduo() {
           active: true
         };
         const createRes = await axios.post('http://localhost:3001/api/transporter', createPayload);
-        let transporterId = createRes.data.id ?? createRes.data.transporter_id ?? createRes.data;
-        alert('Transportista agregado correctamente. Nuevo ID: ' + transporterId);
+        transporterId = createRes.data.id ?? createRes.data.transporter_id ?? createRes.data;
+        // No confirmation alert
       } else {
         transporterId = searchRes.data.transporter_id;
-        alert('Transportista ya existe. ID: ' + transporterId);
+        // No confirmation alert
       }
 
-      // Aquí puedes usar transporterId como necesites
+      return transporterId;
 
     } catch (error) {
       alert('Error al agregar o buscar transportista');
       console.error(error);
+      return null;
     }
   };
 
   const handleAddReceptor = async () => {
     try {
-      // 1. Buscar receptor por nombre
       const searchPayload = { name_reason: formData.razonSocialDestino };
-      console.log('Buscando receptor con payload:', searchPayload);
       let searchRes;
       try {
         searchRes = await axios.post('http://localhost:3001/api/receptor/buscar', searchPayload);
       } catch (searchError) {
         alert('Error al buscar receptor. Intente de nuevo.');
         console.error('Error en búsqueda de receptor:', searchError);
-        return;
+        return null;
       }
 
       let receptorId;
 
-      // Si la API regresa 0, no existe, entonces creamos uno nuevo
       if (searchRes.data === 0) {
         const createPayload = {
           name_reason: formData.razonSocialDestino,
@@ -285,78 +281,176 @@ function RegistroResiduo() {
           active: true
         };
         const createRes = await axios.post('http://localhost:3001/api/receptor', createPayload);
-        // Extrae el ID correctamente
-        let receptorId = createRes.data.id ?? createRes.data.receptor_id ?? createRes.data;
-        alert('Receptor agregado correctamente. Nuevo ID: ' + receptorId);
+        receptorId = createRes.data.id ?? createRes.data.receptor_id ?? createRes.data;
+        // No confirmation alert
       } else {
         receptorId = searchRes.data.receptor_id;
-        alert('Receptor ya existe. ID: ' + receptorId);
+        // No confirmation alert
       }
 
-      // Aquí puedes usar receptorId como necesites
+      return receptorId;
 
     } catch (error) {
       alert('Error al agregar o buscar receptor');
       console.error(error);
+      return null;
     }
   };
 
   const handleAddArea = async () => {
     try {
-      // 1. Buscar área por nombre
       const searchPayload = { area: formData.areaGeneracion };
       const searchRes = await axios.post('http://localhost:3001/api/area/buscar', searchPayload);
 
       let areaId;
 
-      // Si la API regresa 0, no existe, entonces creamos una nueva
       if (searchRes.data === 0) {
         const createPayload = {
           area: formData.areaGeneracion
         };
         const createRes = await axios.post('http://localhost:3001/api/area', createPayload);
-        // Extrae el ID correctamente
         areaId = createRes.data.id ?? createRes.data.area_id ?? createRes.data;
-        alert('Área agregada correctamente. Nuevo ID: ' + areaId);
+        // No confirmation alert
       } else {
         areaId = searchRes.data.area_id;
-        alert('Área ya existe. ID: ' + areaId);
+        // No confirmation alert
       }
 
-      // Aquí puedes usar areaId como necesites
+      return areaId;
 
     } catch (error) {
       alert('Error al agregar o buscar área');
       console.error(error);
+      return null;
     }
   };
 
   const handleAddContainer = async () => {
     try {
-      // 1. Buscar contenedor por tipo
       const searchPayload = { type: formData.tipoContenedor };
       const searchRes = await axios.post('http://localhost:3001/api/container/buscar', searchPayload);
 
       let containerId;
 
-      // Si la API regresa 0, no existe, entonces creamos uno nuevo
       if (searchRes.data === 0) {
         const createPayload = {
           type: formData.tipoContenedor
         };
         const createRes = await axios.post('http://localhost:3001/api/container', createPayload);
-        // Extrae el ID correctamente
         containerId = createRes.data.id ?? createRes.data.container_id ?? createRes.data;
-        alert('Contenedor agregado correctamente. Nuevo ID: ' + containerId);
+        // No confirmation alert
       } else {
         containerId = searchRes.data.container_id;
-        alert('Contenedor ya existe. ID: ' + containerId);
+        // No confirmation alert
       }
 
-      // Aquí puedes usar containerId como necesites
+      return containerId;
 
     } catch (error) {
       alert('Error al agregar o buscar contenedor');
+      console.error(error);
+      return null;
+    }
+  };
+
+  const handleAddDangerousWaste = async () => {
+    try {
+      // Buscar o crear contenedor
+      let containerId = await handleAddContainer();
+      if (!containerId) throw new Error('No se pudo obtener el ID del contenedor');
+
+      // Buscar o crear área
+      let areaId = await handleAddArea();
+      if (!areaId) throw new Error('No se pudo obtener el ID del área');
+
+      const searchPayload = {
+        name_spanish: formData.nombreResiduoEspanol,
+        article: formData.articulo71,
+        container_id: containerId,
+        area_id: areaId,
+      };
+      const searchRes = await axios.post('http://localhost:3001/api/dangerous_waste/buscar', searchPayload);
+
+      let dangerousWasteId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          name_spanish: formData.nombreResiduoEspanol,
+          name_english: formData.nombreResiduoIngles,
+          article: formData.articulo71,
+          container_id: containerId,
+          area_id: areaId,
+          field_c: etiquetasSeleccionadas.C,
+          field_r: etiquetasSeleccionadas.R,
+          field_e: etiquetasSeleccionadas.E,
+          field_t: etiquetasSeleccionadas.T,
+          field_te: etiquetasSeleccionadas.Te,
+          field_th: etiquetasSeleccionadas.Th,
+          field_tt: etiquetasSeleccionadas.Tt,
+          field_i: etiquetasSeleccionadas.I,
+          field_b: etiquetasSeleccionadas.B,
+          field_m: etiquetasSeleccionadas.M
+        };
+        const createRes = await axios.post('http://localhost:3001/api/dangerous_waste', createPayload);
+        dangerousWasteId = createRes.data.id ?? createRes.data.dw_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        dangerousWasteId = searchRes.data.dw_id;
+        // No confirmation alert
+      }
+
+      return dangerousWasteId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar residuo peligroso');
+      console.error(error);
+      return null;
+    }
+  };
+
+  // Utilidad para formatear fechas a 'YYYY-MM-DD'
+  function formatDate(dateStr) {
+    if (!dateStr) return null;
+    // Si ya está en formato correcto, regresa igual
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const date = new Date(dateStr);
+    if (isNaN(date)) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Handler para agregar registro a la tabla registers
+  const handleAddRegister = async () => {
+    try {
+      // Obtener IDs necesarios automáticamente
+      const dwId = await handleAddDangerousWaste();
+      if (!dwId) throw new Error('No se pudo obtener el ID del residuo peligroso');
+
+      const transporterId = await handleAddTransporter();
+      if (!transporterId) throw new Error('No se pudo obtener el ID del transportista');
+
+      const receptorId = await handleAddReceptor();
+      if (!receptorId) throw new Error('No se pudo obtener el ID del receptor');
+
+      const payload = {
+        waste_date: new Date().toISOString().slice(0, 10), // Fecha actual en formato YYYY-MM-DD
+        responsible: formData.responsableTecnico,
+        dw_id: dwId,
+        transporter_id: transporterId,
+        receptor_id: receptorId,
+        quantity: parseFloat(formData.cantidadGenerada),
+        date_in: formatDate(formData.fechaIngreso),
+        date_out: formatDate(formData.fechaSalida)
+      };
+
+      const res = await axios.post('http://localhost:3001/api/register', payload);
+      const registerId = res.data.id ?? res.data.register_id ?? res.data;
+      alert('Registro agregado correctamente. Nuevo ID: ' + registerId);
+      // Aquí puedes usar registerId como necesites
+    } catch (error) {
+      alert('Error al agregar registro');
       console.error(error);
     }
   };
@@ -519,24 +613,8 @@ function RegistroResiduo() {
         {/* New field for English name */}
         {renderCampoAutocompletado('nombreResiduoIngles', 'Nombre del residuo (Inglés)', opciones.nombreResiduoIngles)}
         {renderCampoAutocompletado('tipoContenedor', 'Tipo de contenedor', opciones.tipoContenedor)}
-        <button
-          type="button"
-          className="btn-agregar-contenedor"
-          onClick={handleAddContainer}
-          style={{ marginBottom: '16px' }}
-        >
-          Agregar Contenedor
-        </button>
         {renderCampo('cantidadGenerada', 'Cantidad generada (toneladas)', 'number')}
         {renderCampoAutocompletado('areaGeneracion', 'Área o proceso de generación', opciones.areaGeneracion)}
-        <button
-          type="button"
-          className="btn-agregar-area"
-          onClick={handleAddArea}
-          style={{ marginBottom: '16px' }}
-        >
-          Agregar Área
-        </button>
         {renderCampoFecha('fechaIngreso', 'Fecha de ingreso')}
         {renderCampoFecha('fechaSalida', 'Fecha de salida')}
         {renderCampoAutocompletado('articulo71', 'Artículo 71 fracción I inciso (e)', opciones.articulo71)}
@@ -556,39 +634,24 @@ function RegistroResiduo() {
             ))}
           </div>
         </div>
-        
+
         <h2>Transportista</h2>
         {renderCampoAutocompletado('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
         {renderCampoDesplegable('autorizacionSemarnat', 'Número de autorización SEMARNAT', opciones.autorizacionSemarnat)}
         {renderCampoDesplegable('autorizacionSct', 'Número de autorización SCT', opciones.autorizacionSct)}
-        <button
-          type="button"
-          className="btn-agregar-transportista"
-          onClick={handleAddTransporter}
-          style={{ marginBottom: '16px' }}
-        >
-          Agregar Transportista
-        </button>
         
         <h2>Receptor/Destino</h2>
         {renderCampoAutocompletado('razonSocialDestino', 'Nombre, denominación o razón social', opciones.razonSocialDestino)}
         {renderCampoDesplegable('autorizacionDestino', 'Número de autorización destino', opciones.autorizacionDestino)}
-        <button
-          type="button"
-          className="btn-agregar-receptor"
-          onClick={handleAddReceptor}
-          style={{ marginBottom: '16px' }}
-        >
-          Agregar Receptor
-        </button>
         
         <h2>Responsable</h2>
         {renderCampoAutocompletado('responsableTecnico', 'Nombre del responsable técnico', opciones.responsableTecnico)}
         
         <div className="submit-container">
           <button 
-            type="submit" 
+            type="button" 
             className={`btn-registrar-form ${hayErrores() ? 'btn-disabled' : ''}`}
+            onClick={handleAddRegister}
           >
             Registrar
           </button>
