@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import './RegistrarResiduo.css';
+import { useNavigate } from 'react-router-dom';
 
 function RegistroResiduo() {
+  const [submittedData, setSubmittedData] = useState(null); // 1. Add this line
   // Estado para los datos del formulario
   const [formData, setFormData] = useState({
-    tipoResiduo: '',
+    nombreResiduoEspanol: '',
+    nombreResiduoIngles: '', // <-- Added here
     tipoContenedor: '',
     cantidadGenerada: '',
     areaGeneracion: '',
@@ -18,6 +22,20 @@ function RegistroResiduo() {
     autorizacionDestino: '',
     responsableTecnico: ''
   });
+
+  const navigate = useNavigate();
+
+  const irARegistroResiduo = () => {
+    navigate('/RegistrarResiduo');
+  };
+
+  const irARevisarResiduos = () => {
+    navigate('/RevisarResiduos');
+  };
+
+  const irATablero = () => {
+    navigate('/Tablero');
+  };
   
   // Estado para etiquetas seleccionadas
   const [etiquetasSeleccionadas, setEtiquetasSeleccionadas] = useState({
@@ -40,13 +58,21 @@ function RegistroResiduo() {
 
   // Opciones para los campos desplegables
   const opciones = {
-    tipoResiduo: ['Trapos y guantes contaminados con aceite hidráulico,pintura y thinner provenientes de actividades de limpieza y operación (T)', 'Sello Gastado: proveniente de la aplicación de sellos a carcazas (T)', 'Filtros contaminados con pigmentos  y agua provenientes de la Planta de pintura (T)', 'Solventes Mezclados con base de thinner  provenientes de las actividades de limpieza y/o los mantenimientos realizados a los equipos . ', 'Contenedores  vacios plasticos   contaminados de pintura de aceite y aceite hidraulico', 'Agua Contaminada con pintura proveniente de la aplicación a las carrocerías (T)'],
+    nombreResiduoEspanol: ['Trapos y guantes contaminados con aceite hidráulico,pintura y thinner provenientes de actividades de limpieza y operación (T)', 'Sello Gastado: proveniente de la aplicación de sellos a carcazas (T)', 'Filtros contaminados con pigmentos  y agua provenientes de la Planta de pintura (T)', 'Solventes Mezclados con base de thinner  provenientes de las actividades de limpieza y/o los mantenimientos realizados a los equipos . ', 'Contenedores  vacios plasticos   contaminados de pintura de aceite y aceite hidraulico', 'Agua Contaminada con pintura proveniente de la aplicación a las carrocerías (T)'],
+    nombreResiduoIngles: [
+    'Rags and gloves contaminated with hydraulic oil, paint, and thinner from cleaning and operation activities (T)',
+    'Used seal: from the application of seals to casings (T)',
+    'Filters contaminated with pigments and water from the Paint Plant (T)',
+    'Mixed solvents based on thinner from cleaning activities and/or maintenance performed on equipment.',
+    'Empty plastic containers contaminated with oil paint and hydraulic oil',
+    'Water contaminated with paint from application to car bodies (T)'
+    ],
     tipoContenedor: ['Tambo', 'Tote', 'Tarima', 'Paca', 'Pieza'],
-    areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility"],
+    areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility", "Stamping"],
     articulo71: ['Reciclaje', 'Confinamiento', 'Coprocesamiento'],
     razonSocial: ['Servicios Ambientales Internacionales S. de RL. De C.V.1', 'ECO SERVICIOS PARA GAS SA. DE CV.', 'CONDUGAS DEL NORESTE, S.A DE C.V.'],
     autorizacionSemarnat: ["19-I-030-D-19", "19-I-009D-18", "19-I-031D-19"],
-    autorizacionSct: ["1938SAI07062011230301029", "1938NACL29052015073601001", "1938ESG28112011230301000"],
+    autorizacionSct: ["1938SAI07062011230301029", "1938NACL29052015073601001", "1938ESG28112011230301000", "1938CNO08112011230301036"],
     razonSocialDestino: ['SERVICIOS AMBIENTALES INTERNACIONALES S DE RL DE CV', 'ECOQUIM, S.A. DE C.V. ', 'MAQUILADORA DE LUBRICANTES, S.A. DE C.V. '],
     autorizacionDestino: ["19-II-004D-2020", "19-21-PS-V-04-94", "19-IV-69-16"],
     responsableTecnico: ['Yolanda Martinez', 'Juan Perez','Maria Lopez',"Yamileth Cuellar"],
@@ -55,7 +81,8 @@ function RegistroResiduo() {
 
   // Definir campos requeridos
   const camposRequeridos = [
-    'tipoResiduo',
+    'nombreResiduoEspanol',
+    'nombreResiduoIngles',
     'tipoContenedor',
     'cantidadGenerada',
     'areaGeneracion',
@@ -196,6 +223,7 @@ function RegistroResiduo() {
     const esValido = validarFormulario();
     
     if (esValido) {
+      setSubmittedData(formData); // 2. Save all entries
       console.log('Datos enviados:', formData);
       console.log('Etiquetas seleccionadas:', etiquetasSeleccionadas);
       // Aquí iría la lógica para enviar los datos al servidor
@@ -214,6 +242,232 @@ function RegistroResiduo() {
       [etiqueta]: !prev[etiqueta]
     }));
     setFormularioTocado(true);
+  };
+
+  const handleAddTransporter = async () => {
+    try {
+      const searchPayload = { transporter_name: formData.razonSocial };
+      const searchRes = await axios.post('http://localhost:3001/api/transporter/buscar', searchPayload);
+
+      let transporterId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          transporter_name: formData.razonSocial,
+          authorization_semarnat: formData.autorizacionSemarnat,
+          authorization_sct: formData.autorizacionSct,
+          active: true
+        };
+        const createRes = await axios.post('http://localhost:3001/api/transporter', createPayload);
+        transporterId = createRes.data.id ?? createRes.data.transporter_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        transporterId = searchRes.data.transporter_id;
+        // No confirmation alert
+      }
+
+      return transporterId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar transportista');
+      console.error(error);
+      return null;
+    }
+  };
+
+  const handleAddReceptor = async () => {
+    try {
+      const searchPayload = { name_reason: formData.razonSocialDestino };
+      let searchRes;
+      try {
+        searchRes = await axios.post('http://localhost:3001/api/receptor/buscar', searchPayload);
+      } catch (searchError) {
+        alert('Error al buscar receptor. Intente de nuevo.');
+        console.error('Error en búsqueda de receptor:', searchError);
+        return null;
+      }
+
+      let receptorId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          name_reason: formData.razonSocialDestino,
+          auth: formData.autorizacionDestino,
+          active: true
+        };
+        const createRes = await axios.post('http://localhost:3001/api/receptor', createPayload);
+        receptorId = createRes.data.id ?? createRes.data.receptor_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        receptorId = searchRes.data.receptor_id;
+        // No confirmation alert
+      }
+
+      return receptorId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar receptor');
+      console.error(error);
+      return null;
+    }
+  };
+
+  const handleAddArea = async () => {
+    try {
+      const searchPayload = { area: formData.areaGeneracion };
+      const searchRes = await axios.post('http://localhost:3001/api/area/buscar', searchPayload);
+
+      let areaId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          area: formData.areaGeneracion
+        };
+        const createRes = await axios.post('http://localhost:3001/api/area', createPayload);
+        areaId = createRes.data.id ?? createRes.data.area_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        areaId = searchRes.data.area_id;
+        // No confirmation alert
+      }
+
+      return areaId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar área');
+      console.error(error);
+      return null;
+    }
+  };
+
+  const handleAddContainer = async () => {
+    try {
+      const searchPayload = { type: formData.tipoContenedor };
+      const searchRes = await axios.post('http://localhost:3001/api/container/buscar', searchPayload);
+
+      let containerId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          type: formData.tipoContenedor
+        };
+        const createRes = await axios.post('http://localhost:3001/api/container', createPayload);
+        containerId = createRes.data.id ?? createRes.data.container_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        containerId = searchRes.data.container_id;
+        // No confirmation alert
+      }
+
+      return containerId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar contenedor');
+      console.error(error);
+      return null;
+    }
+  };
+
+  const handleAddDangerousWaste = async () => {
+    try {
+      // Buscar o crear contenedor
+      let containerId = await handleAddContainer();
+      if (!containerId) throw new Error('No se pudo obtener el ID del contenedor');
+
+      // Buscar o crear área
+      let areaId = await handleAddArea();
+      if (!areaId) throw new Error('No se pudo obtener el ID del área');
+
+      const searchPayload = {
+        name_spanish: formData.nombreResiduoEspanol,
+        article: formData.articulo71,
+        container_id: containerId,
+        area_id: areaId,
+      };
+      const searchRes = await axios.post('http://localhost:3001/api/dangerous_waste/buscar', searchPayload);
+
+      let dangerousWasteId;
+
+      if (searchRes.data === 0) {
+        const createPayload = {
+          name_spanish: formData.nombreResiduoEspanol,
+          name_english: formData.nombreResiduoIngles,
+          article: formData.articulo71,
+          container_id: containerId,
+          area_id: areaId,
+          field_c: etiquetasSeleccionadas.C,
+          field_r: etiquetasSeleccionadas.R,
+          field_e: etiquetasSeleccionadas.E,
+          field_t: etiquetasSeleccionadas.T,
+          field_te: etiquetasSeleccionadas.Te,
+          field_th: etiquetasSeleccionadas.Th,
+          field_tt: etiquetasSeleccionadas.Tt,
+          field_i: etiquetasSeleccionadas.I,
+          field_b: etiquetasSeleccionadas.B,
+          field_m: etiquetasSeleccionadas.M
+        };
+        const createRes = await axios.post('http://localhost:3001/api/dangerous_waste', createPayload);
+        dangerousWasteId = createRes.data.id ?? createRes.data.dw_id ?? createRes.data;
+        // No confirmation alert
+      } else {
+        dangerousWasteId = searchRes.data.dw_id;
+        // No confirmation alert
+      }
+
+      return dangerousWasteId;
+
+    } catch (error) {
+      alert('Error al agregar o buscar residuo peligroso');
+      console.error(error);
+      return null;
+    }
+  };
+
+  // Utilidad para formatear fechas a 'YYYY-MM-DD'
+  function formatDate(dateStr) {
+    if (!dateStr) return null;
+    // Si ya está en formato correcto, regresa igual
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const date = new Date(dateStr);
+    if (isNaN(date)) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Handler para agregar registro a la tabla registers
+  const handleAddRegister = async () => {
+    try {
+      // Obtener IDs necesarios automáticamente
+      const dwId = await handleAddDangerousWaste();
+      if (!dwId) throw new Error('No se pudo obtener el ID del residuo peligroso');
+
+      const transporterId = await handleAddTransporter();
+      if (!transporterId) throw new Error('No se pudo obtener el ID del transportista');
+
+      const receptorId = await handleAddReceptor();
+      if (!receptorId) throw new Error('No se pudo obtener el ID del receptor');
+
+      const payload = {
+        waste_date: new Date().toISOString().slice(0, 10), // Fecha actual en formato YYYY-MM-DD
+        responsible: formData.responsableTecnico,
+        dw_id: dwId,
+        transporter_id: transporterId,
+        receptor_id: receptorId,
+        quantity: parseFloat(formData.cantidadGenerada),
+        date_in: formatDate(formData.fechaIngreso),
+        date_out: formatDate(formData.fechaSalida)
+      };
+
+      const res = await axios.post('http://localhost:3001/api/register', payload);
+      const registerId = res.data.id ?? res.data.register_id ?? res.data;
+      alert('Registro agregado correctamente. Nuevo ID: ' + registerId);
+      // Aquí puedes usar registerId como necesites
+    } catch (error) {
+      alert('Error al agregar registro');
+      console.error(error);
+    }
   };
 
   // Renderizar campo con autocompletado
@@ -236,6 +490,11 @@ function RegistroResiduo() {
             className={esInvalido ? 'input-invalid' : ''}
             onFocus={() => {
               setCampoActivo(nombre);
+              if (opciones[nombre]) {
+                setSugerencias(opciones[nombre]);
+              } else {
+                setSugerencias([]);
+              }
               setMostrarSugerencias(true);
             }}
           />
@@ -355,8 +614,9 @@ function RegistroResiduo() {
       <header className="header">
         <div className="logo">KIA MOTORS</div>
         <nav className="nav">
-          <button className="btn-modificar">Modificar Inputs</button>
-          <button className="btn-registrar">Registrar Residuo</button>
+          <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
+          <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
+          <button className="btn-modificar" onClick={irATablero}>Regresar a Tablero</button>
         </nav>
       </header>
 
@@ -365,7 +625,9 @@ function RegistroResiduo() {
       <form className="formulario-residuo" onSubmit={handleSubmit}>
         <h2>Residuo</h2>
         
-        {renderCampoAutocompletado('tipoResiduo', 'Tipo de residuo')}
+        {renderCampoAutocompletado('nombreResiduoEspanol', 'Nombre del Residuo (Español)', opciones.nombreResiduoEspanol)}
+        {/* New field for English name */}
+        {renderCampoAutocompletado('nombreResiduoIngles', 'Nombre del residuo (Inglés)', opciones.nombreResiduoIngles)}
         {renderCampoAutocompletado('tipoContenedor', 'Tipo de contenedor', opciones.tipoContenedor)}
         {renderCampo('cantidadGenerada', 'Cantidad generada (toneladas)', 'number')}
         {renderCampoAutocompletado('areaGeneracion', 'Área o proceso de generación', opciones.areaGeneracion)}
@@ -388,7 +650,7 @@ function RegistroResiduo() {
             ))}
           </div>
         </div>
-        
+
         <h2>Transportista</h2>
         {renderCampoAutocompletado('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
         {renderCampoDesplegable('autorizacionSemarnat', 'Número de autorización SEMARNAT', opciones.autorizacionSemarnat)}
@@ -403,8 +665,9 @@ function RegistroResiduo() {
         
         <div className="submit-container">
           <button 
-            type="submit" 
+            type="button" 
             className={`btn-registrar-form ${hayErrores() ? 'btn-disabled' : ''}`}
+            onClick={handleAddRegister}
           >
             Registrar
           </button>
@@ -412,7 +675,29 @@ function RegistroResiduo() {
       </form>
 
       <footer className="footer">
-        <div className="site-name">Site name</div>
+        <div className="site-name">
+          Site name
+          {submittedData && (
+            <div className="submitted-entries">
+              <h3>Entradas del formulario:</h3>
+              <ul>
+                {Object.entries(submittedData).map(([key, value]) => (
+                  <li key={key}>
+                    {key}: {value}
+                  </li>
+                ))}
+                <li>
+                  etiquetasSeleccionadas: {
+                    Object.entries(etiquetasSeleccionadas)
+                      .filter(([_, v]) => v)
+                      .map(([k]) => k)
+                      .join(', ') || 'Ninguna'
+                  }
+                </li>
+              </ul>
+            </div>
+          )}
+          </div>
         <div className="topics">
           <div className="topic-column">
             <div>Topic</div>
