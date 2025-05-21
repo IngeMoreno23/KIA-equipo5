@@ -4,6 +4,7 @@ import RegistrarResiduo from './pages/RegistrarResiduo';
 import Tablero from './pages/Tablero';
 import Home from './pages/Home';
 import LoginForm from './components/LoginForm';
+import RevisarResiduos from './pages/RevisarResiduos';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/tablero" element={<Tablero />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/RegistrarResiduo" element={<RegistrarResiduo />} />
+          <Route path="/RevisarResiduos" element={<RevisarResiduos />} />
         </Routes>
       </Router>
     </div>

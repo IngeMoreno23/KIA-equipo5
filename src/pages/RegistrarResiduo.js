@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './RegistrarResiduo.css';
+import { useNavigate } from 'react-router-dom';
 
 function RegistroResiduo() {
   const [submittedData, setSubmittedData] = useState(null); // 1. Add this line
@@ -21,6 +22,20 @@ function RegistroResiduo() {
     autorizacionDestino: '',
     responsableTecnico: ''
   });
+
+  const navigate = useNavigate();
+
+  const irARegistroResiduo = () => {
+    navigate('/RegistrarResiduo');
+  };
+
+  const irARevisarResiduos = () => {
+    navigate('/RevisarResiduos');
+  };
+
+  const irATablero = () => {
+    navigate('/Tablero');
+  };
   
   // Estado para etiquetas seleccionadas
   const [etiquetasSeleccionadas, setEtiquetasSeleccionadas] = useState({
@@ -599,8 +614,9 @@ function RegistroResiduo() {
       <header className="header">
         <div className="logo">KIA MOTORS</div>
         <nav className="nav">
-          <button className="btn-modificar">Modificar Inputs</button>
-          <button className="btn-registrar">Registrar Residuo</button>
+          <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
+          <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
+          <button className="btn-modificar" onClick={irATablero}>Regresar a Tablero</button>
         </nav>
       </header>
 

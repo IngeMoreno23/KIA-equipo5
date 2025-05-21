@@ -10,13 +10,16 @@ function Tablero() {
     navigate('/RegistrarResiduo');
   };
 
+  const irARevisarResiduos = () => {
+    navigate('/RevisarResiduos');
+  }
   return (
     <div className="tablero-container">
       {/* Header */}
       <header className="header">
         <div className="logo">KIA MOTORS</div>
         <nav className="nav">
-          <button className="btn-modificar">Modificar Inputs</button>
+          <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
         </nav>
       </header>
