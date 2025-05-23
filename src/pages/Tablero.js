@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 function Tablero() {
   const navigate = useNavigate();
 
+  // Check admin status from localStorage
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
   // Función para manejar la navegación al registro de residuos
   const irARegistroResiduo = () => {
     navigate('/RegistrarResiduo');
@@ -13,6 +16,7 @@ function Tablero() {
   const irARevisarResiduos = () => {
     navigate('/RevisarResiduos');
   }
+
   return (
     <div className="tablero-container">
       {/* Header */}
@@ -21,6 +25,11 @@ function Tablero() {
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
+          {(
+            <button className="btn-admin">
+              {localStorage.getItem('username')}
+            </button>
+          )}
         </nav>
       </header>
 
