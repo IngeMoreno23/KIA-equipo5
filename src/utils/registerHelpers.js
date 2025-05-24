@@ -195,6 +195,8 @@ export const handleAddRegister = async (formData, etiquetasSeleccionadas) => {
 
     const res = await axios.post('http://localhost:3001/api/register', payload);
     const registerId = res.data.id ?? res.data.register_id ?? res.data;
+    const username = localStorage.getItem('username');
+    await axios.post('http://localhost:3001/api/logs', { username, log_action: 'Register Created', register_id: registerId });
     alert('Registro agregado correctamente. Nuevo ID: ' + registerId);
     // Aquí puedes usar registerId como necesites
   } catch (error) {

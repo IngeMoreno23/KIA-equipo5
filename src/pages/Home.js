@@ -17,6 +17,8 @@ function Home() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('isAdmin', res.data.is_admin);
       localStorage.setItem('username', res.data.nombre);
+      const username = localStorage.getItem('username');
+      await axios.post('http://localhost:3001/api/logs', { username, log_action: 'Login' });
       navigate('/tablero');
     } catch (err) {
       setError('Credenciales inválidas');

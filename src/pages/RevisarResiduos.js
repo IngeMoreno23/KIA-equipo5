@@ -221,25 +221,31 @@ function RevisarResiduos() {
   };
 
   // Function to handle edit button click
-  const handleEditClick = (reg) => {
+  const handleEditClick = async (reg) => {
     if (editingId === reg.register_id || editingId === reg.id) {
       // Save changes
       const registerId = reg.register_id ?? reg.id;
       const updatedFields = { ...editValues, register_id: registerId };
-      axios.put(`http://localhost:3001/api/register/actualizar/${registerId}`, updatedFields)
-        .then(() => {
-          setEditingId(null);
-          setEditValues({});
-          // Refresh table
-          fetchRegisters();
-        })
-        .catch(err => {
-          if (err.response && err.response.data) {
-            setError('No se pudo actualizar el registro: ' + JSON.stringify(err.response.data));
-          } else {
-            setError('No se pudo actualizar el registro');
-          }
+      try {
+        await axios.put(`http://localhost:3001/api/register/actualizar/${registerId}`, updatedFields);
+        // Log the edit action
+        const username = localStorage.getItem('username') || 'unknown';
+        await axios.post('http://localhost:3001/api/logs', {
+          username,
+          log_action: 'Register Edited',
+          register_id: registerId
         });
+        setEditingId(null);
+        setEditValues({});
+        // Refresh table
+        fetchRegisters();
+      } catch (err) {
+        if (err.response && err.response.data) {
+          setError('No se pudo actualizar el registro: ' + JSON.stringify(err.response.data));
+        } else {
+          setError('No se pudo actualizar el registro');
+        }
+      }
     } else {
       // Enter edit mode
       setEditingId(reg.register_id ?? reg.id);
@@ -265,7 +271,14 @@ function RevisarResiduos() {
     const registerId = reg.register_id ?? reg.id;
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       axios.delete(`http://localhost:3001/api/register/eliminar/${registerId}`)
-        .then(() => {
+        .then(async () => {
+          // Log the delete action
+          const username = localStorage.getItem('username') || 'unknown';
+          await axios.post('http://localhost:3001/api/logs', {
+            username,
+            log_action: 'Register Eliminated',
+            register_id: registerId
+          });
           fetchRegisters();
         })
         .catch(err => {
