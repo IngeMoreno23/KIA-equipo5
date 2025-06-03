@@ -4,7 +4,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[1] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -12,7 +13,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[2] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -20,7 +22,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[3] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[4]
+      razonSocial: opciones.razonSocial[4],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[4]
     })
   },
   {
@@ -28,7 +31,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[5] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -36,7 +40,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[7] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -44,7 +49,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[10] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[4]
+      razonSocial: opciones.razonSocial[4],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[4]
     })
   },
   {
@@ -52,7 +58,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[12] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -60,7 +67,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[14] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[3]
+      razonSocial: opciones.razonSocial[3],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[3]
     })
   },
   {
@@ -68,7 +76,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[15] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[3]
+      razonSocial: opciones.razonSocial[3],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[3]
     })
   },
   {
@@ -76,7 +85,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[17] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[4]
+      razonSocial: opciones.razonSocial[4],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[4]
     })
   },
   {
@@ -84,7 +94,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[18] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -92,7 +103,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[19] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {
@@ -100,7 +112,8 @@ export const autoFillRules = [
     condition: (value, opciones) => opciones.nombreResiduoEspanol[24] === value,
     apply: (prev, opciones) => ({
       ...prev,
-      razonSocial: opciones.razonSocial[0]
+      razonSocial: opciones.razonSocial[0],
+      autorizacionSemarnat: opciones.autorizacionSemarnat[0]
     })
   },
   {

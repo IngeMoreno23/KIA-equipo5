@@ -138,7 +138,12 @@ function RegistroResiduo() {
       "1938SAI07062011230301029",
       "1938NACL29052015073601001",
       "1938ESG28112011230301000",
-      "1938CNO08112011230301036"
+      "1938CNO08112011230301036",
+      "1938SAI07062011230301000",
+      "1938SAI07062011230301022",
+      "1938SAI07062011230301023",
+      "1938CACL13102022230303000",
+
     ],
     razonSocialDestino: [
       "AQUAREC, SAPI de CV",
@@ -598,7 +603,11 @@ function RegistroResiduo() {
         <h2>Transportista</h2>
         {renderCampoAutocompletado('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
         {renderCampoDesplegable('autorizacionSemarnat', 'Número de autorización SEMARNAT', opciones.autorizacionSemarnat)}
-        {renderCampoDesplegable('autorizacionSct', 'Número de autorización SCT', opciones.autorizacionSct)}
+        {renderCampoDesplegable(
+          'autorizacionSct',
+          'Número de autorización SCT',
+          getFilteredOptions('autorizacionSct', formData, opciones)
+        )}
         
         <h2>Receptor/Destino</h2>
         {renderCampoAutocompletado('razonSocialDestino', 'Nombre, denominación o razón social', opciones.razonSocialDestino)}

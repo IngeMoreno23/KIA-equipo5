@@ -71,6 +71,24 @@ export const autoSuggestRules = [
     condition: (nombreResiduoEspanol, opciones) => opciones.nombreResiduoEspanol[23] === nombreResiduoEspanol,
     getOptions: (opciones) => [opciones.razonSocial[0], opciones.razonSocial[1]]
   },
+  {
+    field: "autorizacionSct",
+    dependsOn: "autorizacionSemarnat",
+    condition: (autorizacionSemarnat, opciones) => opciones.autorizacionSemarnat[0] === autorizacionSemarnat,
+    getOptions: (opciones) => [opciones.autorizacionSct[7], opciones.autorizacionSct[5], opciones.autorizacionSct[6], opciones.autorizacionSct[0]]
+  },
+  {
+    field: "autorizacionSct",
+    dependsOn: "autorizacionSemarnat",
+    condition: (autorizacionSemarnat, opciones) => opciones.autorizacionSemarnat[4] === autorizacionSemarnat,
+    getOptions: (opciones) => [opciones.autorizacionSct[7], opciones.autorizacionSct[1]]
+  },
+  {
+    field: "autorizacionSct",
+    dependsOn: "autorizacionSemarnat",
+    condition: (autorizacionSemarnat, opciones) => opciones.autorizacionSemarnat[2] === autorizacionSemarnat,
+    getOptions: (opciones) => [opciones.autorizacionSct[2], opciones.autorizacionSct[3]]
+  },
 ];
 
 export function getFilteredOptions(field, formData, opciones) {

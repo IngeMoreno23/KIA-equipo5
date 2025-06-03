@@ -1,12 +1,15 @@
 import './Tablero.css';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import GraficaBarra from '../components/GraficaBarra';
+import GraficaPieArticulo from '../components/GraficaPieArticulo';
+import GraficaPieResponsable from '../components/GraficaPieResponsable';
 
 function Tablero() {
   const navigate = useNavigate();
 
   // Check admin status from localStorage
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  // const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   // Función para manejar la navegación al registro de residuos
   const irARegistroResiduo = () => {
@@ -40,23 +43,33 @@ function Tablero() {
         {/* Resumen de gráficas */}
         <section className="resumen">
           {/* Aquí podrías mapear varias gráficas */}
-          <div className="grafica">Gráfica 1</div>
-          <div className="grafica">Gráfica 2</div>
-          <div className="grafica">Gráfica 3</div>
+          <div className="grafica">
+            <GraficaBarra />
+          </div>
+          <div className="grafica">
+            <GraficaPieArticulo />
+          </div>
+          <div className="grafica">
+            <GraficaPieResponsable />
+          </div>
           {/* etc */}
         </section>
 
         {/* Acceso Rápido */}
         <section className="acceso-rapido">
           <div className="filtros">
-            <button>Todos</button>
-            <button>Abierto Recientemente</button>
-            <button>Favoritos</button>
+            <h2>Reportes</h2>
           </div>
           <div className="lista-bitacoras">
             {/* Lista de bitácoras */}
-            <div className="bitacora">Bitácora RPS 2024</div>
-            <div className="bitacora">Bitácora RPS 2023</div>
+            <a
+              href={process.env.PUBLIC_URL + '/Bitacora RPS 2024.xlsx'}
+              download
+              className="bitacora"
+              style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              Bitácora RPS 2024
+            </a>
           </div>
         </section>
       </main>
