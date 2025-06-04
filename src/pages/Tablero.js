@@ -4,12 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import GraficaBarra from '../components/GraficaBarra';
 import GraficaPieArticulo from '../components/GraficaPieArticulo';
 import GraficaPieResponsable from '../components/GraficaPieResponsable';
+import RutaPrivada from '../components/RutaPrivada';
 
-function Tablero() {
+function TableroContent() {
   const navigate = useNavigate();
-
-  // Check admin status from localStorage
-  // const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   // Función para manejar la navegación al registro de residuos
   const irARegistroResiduo = () => {
@@ -18,7 +16,14 @@ function Tablero() {
 
   const irARevisarResiduos = () => {
     navigate('/RevisarResiduos');
-  }
+  };
+
+  const irAManejarUsuarios = () => {
+    navigate('/ManejarUsuarios');
+  };
+
+  // Verifica si el usuario es admin
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   return (
     <div className="tablero-container">
@@ -28,8 +33,8 @@ function Tablero() {
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
-          {(
-            <button className="btn-admin">
+          {isAdmin && (
+            <button className="btn-admin" onClick={irAManejarUsuarios}>
               {localStorage.getItem('username')}
             </button>
           )}
@@ -83,9 +88,14 @@ function Tablero() {
           <div>Topic</div>
         </div>
       </footer>
-
     </div>
   );
 }
 
-export default Tablero;
+export default function Tablero() {
+  return (
+    <RutaPrivada>
+      <TableroContent />
+    </RutaPrivada>
+  );
+}

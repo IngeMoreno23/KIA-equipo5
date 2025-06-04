@@ -44,8 +44,8 @@ body {
 .login-container {
   width: 260px;
   max-width: 95vw;
-  max-height: 90vh;         /* Prevents overflow on tall screens */
-  overflow-y: auto;         /* Adds scroll if needed */
+  max-height: 90vh;
+  overflow-y: auto;
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   padding: 32px 24px;
@@ -53,12 +53,14 @@ body {
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
   animation: fadeIn 1s ease;
   position: absolute;
-  top: auto;                /* Ensures bottom positioning */
-  bottom: 24px;
-  right: 24px;
+  top: 50%;
+  right: 5%;
+  left: auto;
+  bottom: auto;
+  transform: translateY(-50%);
   margin: 0;
   box-sizing: border-box;
-  z-index: 1; /* Add this line */
+  z-index: 1;
 }
 
 @keyframes fadeIn {
@@ -109,6 +111,25 @@ body {
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
+.login-input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 18px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background: rgba(245, 245, 245, 0.95);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.04);
+}
+
+.login-input:focus {
+  border-color: #4285f4;
+  outline: none;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+}
+
 .remember-forgot {
   display: flex;
   justify-content: space-between;
@@ -138,21 +159,26 @@ body {
   text-decoration: underline;
 }
 
-.login-btn {
+.login-button {
   width: 100%;
   padding: 12px;
   background-color: #4285f4;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.08);
 }
 
-.login-btn:hover {
+.login-button:hover,
+.login-button:focus {
   background-color: #3367d6;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.15);
+  outline: none;
 }
 
 .signup-link {

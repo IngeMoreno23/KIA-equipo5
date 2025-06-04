@@ -3,8 +3,9 @@ import axios from 'axios';
 import './RevisarResiduos.css';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
+import RutaPrivada from '../components/RutaPrivada'; // <-- Importa RutaPrivada
 
-function RevisarResiduos() {
+function RevisarResiduosContent() {
   const [registers, setRegisters] = useState([]);
   const [dwInfo, setDwInfo] = useState({});
   const [containerInfo, setContainerInfo] = useState({});
@@ -501,4 +502,10 @@ function RevisarResiduos() {
   );
 }
 
-export default RevisarResiduos;
+export default function RevisarResiduos() {
+  return (
+    <RutaPrivada>
+      <RevisarResiduosContent />
+    </RutaPrivada>
+  );
+}

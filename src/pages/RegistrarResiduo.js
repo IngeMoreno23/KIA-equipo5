@@ -7,6 +7,7 @@ import { getFilteredOptions } from '../utils/autoSuggestRules';
 import {
   handleAddRegister
 } from '../utils/registerHelpers';
+import RutaPrivada from '../components/RutaPrivada'; // <-- Importa RutaPrivada
 
 function RegistroResiduo() {
   const [submittedData, setSubmittedData] = useState(null); // 1. Add this line
@@ -696,4 +697,10 @@ function RegistroResiduo() {
   );
 }
 
-export default RegistroResiduo;
+export default function RegistrarResiduo() {
+  return (
+    <RutaPrivada>
+      <RegistroResiduo />
+    </RutaPrivada>
+  );
+}
