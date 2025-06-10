@@ -11,7 +11,7 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-const GraficaPieArticulo = () => {
+const GraficaPieArticulo = ({ width = 400, height = 300, maximized = false, year, month }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -20,9 +20,19 @@ const GraficaPieArticulo = () => {
       try {
         // 1. Get all registers
         const regRes = await axios.get('http://localhost:3001/api/register');
-        const registers = regRes.data;
+        let registers = regRes.data;
 
-        // 2. Get dangerous_waste info for each register
+        // 2. Filter by year and month using date_in
+        registers = registers.filter(reg => {
+          const date = new Date(reg.date_in);
+          const regYear = date.getFullYear();
+          const regMonth = String(date.getMonth() + 1).padStart(2, '0');
+          if (regYear !== Number(year)) return false;
+          if (month && regMonth !== month) return false;
+          return true;
+        });
+
+        // 3. Group by article using dangerous_waste API
         const articleCounts = {};
         await Promise.all(
           registers.map(async (reg) => {
@@ -38,7 +48,6 @@ const GraficaPieArticulo = () => {
           })
         );
 
-        // 3. Prepare data for Pie chart
         const labels = Object.keys(articleCounts);
         const values = Object.values(articleCounts);
 
@@ -68,16 +77,20 @@ const GraficaPieArticulo = () => {
     };
 
     fetchData();
-  }, []);
+  }, [year, month]);
 
   if (error) return <div>{error}</div>;
   if (!data) return <div>Cargando gráfica...</div>;
+  if (data.labels.length === 0) return <div>No hay datos para este periodo.</div>;
 
   return (
     <Pie
       data={data}
+      width={width}
+      height={height}
       options={{
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: true, position: 'bottom' },
           title: { display: true, text: 'Distribución por Artículo' },

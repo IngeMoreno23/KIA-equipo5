@@ -11,7 +11,7 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, year, month }) => {
+const GraficaPieResiduo = ({ width = 600, height = 450, maximized = false, year, month }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -21,7 +21,7 @@ const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, y
         const regRes = await axios.get('http://localhost:3001/api/register');
         let registers = regRes.data;
 
-        // Filter by year and month using date_in
+        // Filtrar por año y mes usando date_in
         registers = registers.filter(reg => {
           const date = new Date(reg.date_in);
           const regYear = date.getFullYear();
@@ -31,21 +31,31 @@ const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, y
           return true;
         });
 
-        // Contar ocurrencias por responsable
-        const responsibleCounts = {};
-        registers.forEach(reg => {
-          const responsible = reg.responsible || 'Sin responsable';
-          responsibleCounts[responsible] = (responsibleCounts[responsible] || 0) + 1;
-        });
+        // Agrupar por nombre de residuo usando dangerous_waste API
+        const residuoCounts = {};
+        await Promise.all(
+          registers.map(async (reg) => {
+            if (reg.dw_id) {
+              try {
+                const dwRes = await axios.get(`http://localhost:3001/api/dangerous_waste/${reg.dw_id}`);
+                const nombre = dwRes.data.name_spanish || 'Sin nombre';
+                residuoCounts[nombre] = (residuoCounts[nombre] || 0) + 1;
+              } catch (e) {
+                // Si hay error, lo ignoramos para ese registro
+              }
+            }
+          })
+        );
 
-        const labels = Object.keys(responsibleCounts);
-        const values = Object.values(responsibleCounts);
+        // Preparar datos para la gráfica
+        const labels = Object.keys(residuoCounts);
+        const values = Object.values(residuoCounts);
 
         setData({
           labels,
           datasets: [
             {
-              label: 'Registros por Responsable',
+              label: 'Registros por Residuo (Español)',
               data: values,
               backgroundColor: [
                 'rgba(255, 99, 132, 0.6)',
@@ -61,7 +71,7 @@ const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, y
           ],
         });
       } catch (err) {
-        setError('Error al cargar la gráfica de responsables');
+        setError('Error al cargar la gráfica de residuos');
         console.error(err);
       }
     };
@@ -83,11 +93,11 @@ const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, y
         maintainAspectRatio: false,
         plugins: {
           legend: { display: true, position: 'bottom' },
-          title: { display: true, text: 'Distribución por Responsable' },
+          title: { display: true, text: 'Distribución por Nombre de Residuo (Español)' },
         },
       }}
     />
   );
 };
 
-export default GraficaPieResponsable;
+export default GraficaPieResiduo;

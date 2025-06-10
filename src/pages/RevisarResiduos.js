@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RevisarResiduos.css';
 import { useNavigate } from 'react-router-dom';
-import * as XLSX from 'xlsx';
-import RutaPrivada from '../components/RutaPrivada'; // <-- Importa RutaPrivada
+import RutaPrivada from '../components/RutaPrivada'; 
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 function RevisarResiduosContent() {
   const [registers, setRegisters] = useState([]);
@@ -170,9 +171,55 @@ function RevisarResiduosContent() {
     });
 
   // Function to export table to Excel
-  const exportToExcel = () => {
-    // Prepare data for Excel
-    const data = filteredRegisters.map(reg => {
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Residuos');
+
+    // --- 1. Insert KIA logo image at the top (row 1) ---
+    const response = await fetch('/KIA_Logo.png');
+    const blob = await response.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const imageId = workbook.addImage({
+      buffer: arrayBuffer,
+      extension: 'png',
+    });
+    worksheet.addImage(imageId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: 152, height: 55 }
+    });
+
+    // --- 2. Set up columns and add data as usual ---
+    const columns = [
+      { header: 'ID', key: 'ID', width: 18 },
+      { header: 'Fecha de Registro', key: 'Register Date', width: 18 },
+      { header: 'Nombre del Residuo (Español)', key: 'name_spanish', width: 54 },
+      { header: 'Nombre del Residuo (Inglés)', key: 'name_english', width: 54 },
+      { header: 'Artículo', key: 'article', width: 18 },
+      { header: 'Tipo de Contenedor', key: 'container_type', width: 18 },
+      { header: 'Área', key: 'area', width: 18 },
+      { header: 'C', key: 'C', width: 6 },
+      { header: 'R', key: 'R', width: 6 },
+      { header: 'E', key: 'E', width: 6 },
+      { header: 'T', key: 'T', width: 6 },
+      { header: 'Te', key: 'Te', width: 6 },
+      { header: 'Th', key: 'Th', width: 6 },
+      { header: 'Tt', key: 'Tt', width: 6 },
+      { header: 'I', key: 'I', width: 6 },
+      { header: 'B', key: 'B', width: 6 },
+      { header: 'M', key: 'M', width: 6 },
+      { header: 'Cantidad', key: 'quantity', width: 18 },
+      { header: 'Nombre del Transportista', key: 'transporter_name', width: 36 },
+      { header: 'Autorización SEMARNAT', key: 'authorization_semarnat', width: 18 },
+      { header: 'Autorización SCT', key: 'authorization_sct', width: 18 },
+      { header: 'Nombre del Receptor', key: 'receptor_name', width: 36 },
+      { header: 'Autorización del Receptor', key: 'receptor_auth', width: 18 },
+      { header: 'Fecha de Entrada', key: 'date_in', width: 18 },
+      { header: 'Fecha de Salida', key: 'date_out', width: 18 },
+      { header: 'Responsable', key: 'Responsible', width: 18 },
+    ];
+    worksheet.columns = columns;
+
+    filteredRegisters.forEach(reg => {
       const dw = dwInfo[reg.dw_id] || {};
       const containerId = dw.container_id ?? '-';
       const container = containerInfo[containerId] || {};
@@ -182,43 +229,232 @@ function RevisarResiduosContent() {
       const transporter = transporterInfo[transporterId] || {};
       const receptorId = reg.receptor_id ?? '-';
       const receptor = receptorInfo[receptorId] || {};
-      return {
-        ID: reg.register_id ?? reg.id,
-        'Register Date': reg.waste_date,
-        name_spanish: dw.name_spanish || '-',
-        name_english: dw.name_english || '-',
-        article: dw.article || '-',
-        container_type: container.type || '-',
-        area: area.area || '-',
-        C: dw.field_c ? '✔️' : '-',
-        R: dw.field_r ? '✔️' : '-',
-        E: dw.field_e ? '✔️' : '-',
-        T: dw.field_t ? '✔️' : '-',
-        Te: dw.field_te ? '✔️' : '-',
-        Th: dw.field_th ? '✔️' : '-',
-        Tt: dw.field_tt ? '✔️' : '-',
-        I: dw.field_i ? '✔️' : '-',
-        B: dw.field_b ? '✔️' : '-',
-        M: dw.field_m ? '✔️' : '-',
-        quantity: reg.quantity,
-        transporter_name: transporter.transporter_name || '-',
-        authorization_semarnat: transporter.authorization_semarnat || '-',
-        authorization_sct: transporter.authorization_sct || '-',
-        receptor_name: receptor.name_reason || '-',
-        receptor_auth: receptor.auth || '-',
-        date_in: reg.date_in,
-        date_out: reg.date_out,
-        Responsible: reg.responsible
+      const rowData = [
+        reg.register_id ?? reg.id,
+        reg.waste_date,
+        dw.name_spanish || '-',
+        dw.name_english || '-',
+        dw.article || '-',
+        container.type || '-',
+        area.area || '-',
+        dw.field_c ? '✔️' : '-',
+        dw.field_r ? '✔️' : '-',
+        dw.field_e ? '✔️' : '-',
+        dw.field_t ? '✔️' : '-',
+        dw.field_te ? '✔️' : '-',
+        dw.field_th ? '✔️' : '-',
+        dw.field_tt ? '✔️' : '-',
+        dw.field_i ? '✔️' : '-',
+        dw.field_b ? '✔️' : '-',
+        dw.field_m ? '✔️' : '-',
+        reg.quantity,
+        transporter.transporter_name || '-',
+        transporter.authorization_semarnat || '-',
+        transporter.authorization_sct || '-',
+        receptor.name_reason || '-',
+        receptor.auth || '-',
+        reg.date_in,
+        reg.date_out,
+        reg.responsible
+      ];
+      worksheet.addRow(rowData);
+    });
+
+    // --- 3. Move everything but the logo 3 rows down ---
+    worksheet.spliceRows(1, 0, [], [], []);
+
+    // --- 4. Style the header row (now at row 4) ---
+    worksheet.getRow(4).eachCell({ includeEmpty: true }, (cell) => {
+      cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '000000' }
+      };
+      cell.font = { color: { argb: 'FFFFFF' }, bold: true, size: 14 }; // doubled font size (default is 11-12)
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
       };
     });
 
-    // Create worksheet and workbook
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Residuos');
+    // --- 5. Add borders to all data cells (from header row onwards) and center all text ---
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber >= 4) {
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        });
+      }
+    });
 
-    // Download Excel file
-    XLSX.writeFile(wb, 'registros_residuos.xlsx');
+    // --- 6. Set all row heights to double the default (default is 15, so set to 30) ---
+    worksheet.eachRow((row) => {
+      row.height = 60;
+    });
+
+    // --- 7. Merge cells from A1 to Z3 (after everything else is set up) ---
+    worksheet.mergeCells('A1:Z3');
+
+    // --- 7.1. Add title to the merged cell ---
+    worksheet.getCell('A1').value = 'BITACORA DE RESIDUOS PELIGROSOS';
+    worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    worksheet.getCell('A1').font = { size: 30, bold: true };
+
+    // --- 8. Save file ---
+    const buf = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buf]), 'registros_residuos.xlsx');
+  };
+
+  // Function to export table to Excel (English)
+  const exportToExcelEnglish = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Waste Log');
+
+    // Insert KIA logo
+    const response = await fetch('/KIA_Logo.png');
+    const blob = await response.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const imageId = workbook.addImage({
+      buffer: arrayBuffer,
+      extension: 'png',
+    });
+    worksheet.addImage(imageId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: 152, height: 55 }
+    });
+
+    // English columns
+    const columns = [
+      { header: 'ID', key: 'ID', width: 18 },
+      { header: 'Register Date', key: 'Register Date', width: 18 },
+      { header: 'Waste Name (Spanish)', key: 'name_spanish', width: 54 },
+      { header: 'Waste Name (English)', key: 'name_english', width: 54 },
+      { header: 'Article', key: 'article', width: 18 },
+      { header: 'Container Type', key: 'container_type', width: 18 },
+      { header: 'Area', key: 'area', width: 18 },
+      { header: 'C', key: 'C', width: 6 },
+      { header: 'R', key: 'R', width: 6 },
+      { header: 'E', key: 'E', width: 6 },
+      { header: 'T', key: 'T', width: 6 },
+      { header: 'Te', key: 'Te', width: 6 },
+      { header: 'Th', key: 'Th', width: 6 },
+      { header: 'Tt', key: 'Tt', width: 6 },
+      { header: 'I', key: 'I', width: 6 },
+      { header: 'B', key: 'B', width: 6 },
+      { header: 'M', key: 'M', width: 6 },
+      { header: 'Quantity', key: 'quantity', width: 18 },
+      { header: 'Transporter Name', key: 'transporter_name', width: 36 },
+      { header: 'SEMARNAT Authorization', key: 'authorization_semarnat', width: 18 },
+      { header: 'SCT Authorization', key: 'authorization_sct', width: 18 },
+      { header: 'Receiver Name', key: 'receptor_name', width: 36 },
+      { header: 'Receiver Authorization', key: 'receptor_auth', width: 18 },
+      { header: 'Entry Date', key: 'date_in', width: 18 },
+      { header: 'Exit Date', key: 'date_out', width: 18 },
+      { header: 'Responsible', key: 'Responsible', width: 18 },
+    ];
+    worksheet.columns = columns;
+
+    // Add data
+    filteredRegisters.forEach(reg => {
+      const dw = dwInfo[reg.dw_id] || {};
+      const containerId = dw.container_id ?? '-';
+      const container = containerInfo[containerId] || {};
+      const areaId = dw.area_id ?? '-';
+      const area = areaInfo[areaId] || {};
+      const transporterId = reg.transporter_id ?? '-';
+      const transporter = transporterInfo[transporterId] || {};
+      const receptorId = reg.receptor_id ?? '-';
+      const receptor = receptorInfo[receptorId] || {};
+      const rowData = [
+        reg.register_id ?? reg.id,
+        reg.waste_date,
+        dw.name_spanish || '-',
+        dw.name_english || '-',
+        dw.article || '-',
+        container.type || '-',
+        area.area || '-',
+        dw.field_c ? '✔️' : '-',
+        dw.field_r ? '✔️' : '-',
+        dw.field_e ? '✔️' : '-',
+        dw.field_t ? '✔️' : '-',
+        dw.field_te ? '✔️' : '-',
+        dw.field_th ? '✔️' : '-',
+        dw.field_tt ? '✔️' : '-',
+        dw.field_i ? '✔️' : '-',
+        dw.field_b ? '✔️' : '-',
+        dw.field_m ? '✔️' : '-',
+        reg.quantity,
+        transporter.transporter_name || '-',
+        transporter.authorization_semarnat || '-',
+        transporter.authorization_sct || '-',
+        receptor.name_reason || '-',
+        receptor.auth || '-',
+        reg.date_in,
+        reg.date_out,
+        reg.responsible
+      ];
+      worksheet.addRow(rowData);
+    });
+
+    // Move everything but the logo 3 rows down
+    worksheet.spliceRows(1, 0, [], [], []);
+
+    // Style the header row (now at row 4)
+    worksheet.getRow(4).eachCell({ includeEmpty: true }, (cell) => {
+      cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '000000' }
+      };
+      cell.font = { color: { argb: 'FFFFFF' }, bold: true, size: 14 };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+
+    // Add borders and center all text
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber >= 4) {
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        });
+      }
+    });
+
+    // Set all row heights to double the default (default is 15, so set to 30)
+    worksheet.eachRow((row) => {
+      row.height = 60;
+    });
+
+    // Merge cells from A1 to Z3
+    worksheet.mergeCells('A1:Z3');
+
+    // Add title to the merged cell
+    worksheet.getCell('A1').value = 'HAZARDOUS WASTE LOGBOOK';
+    worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    worksheet.getCell('A1').font = { size: 30, bold: true };
+
+    // Save file
+    const buf = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buf]), 'hazardous_waste_logbook.xlsx');
   };
 
   // Function to handle edit button click
@@ -323,6 +559,27 @@ function RevisarResiduosContent() {
         onMouseOut={e => (e.target.style.background = 'var(--primary-color)')}
       >
         Descargar Excel
+      </button>
+      <button
+        onClick={exportToExcelEnglish}
+        style={{
+          marginBottom: '1rem',
+          marginLeft: '1rem',
+          background: 'var(--primary-color)',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '6px',
+          padding: '10px 22px',
+          fontWeight: 'bold',
+          fontSize: '1rem',
+          cursor: 'pointer',
+          boxShadow: 'var(--shadow)',
+          transition: 'background 0.2s'
+        }}
+        onMouseOver={e => (e.target.style.background = '#001e6c')}
+        onMouseOut={e => (e.target.style.background = 'var(--primary-color)')}
+      >
+        Download Excel (English)
       </button>
       {/* Date filter controls */}
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>

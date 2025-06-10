@@ -62,115 +62,64 @@ function RegistroResiduo() {
   const [formularioTocado, setFormularioTocado] = useState(false);
   const [mostrarError, setMostrarError] = useState(false);
 
-  // Opciones para los campos desplegables
-  const opciones = {
-    nombreResiduoEspanol: [
-      "Trapos, guantes y textiles contaminados con aceite hidraulico,pintura, thinner y grasa provenientes de actividades de limpieza, operación y mantenimiento",
-      "Plasticos contaminados con aceite hidraulico y pintura provenientes de actividades de limpieza y operación",
-      "Papel contaminado con pintura proveniente de la actividad de retoque de carrocerias",
-      "Tambos vacios metalicos contaminados con aceite hidraulico, liquidos para frenos y sello",
-      "Tambos vacios plasticos contaminados  limpiadores con base de hidroxido de potasio",
-      "Lodos de Fosfatizado proveniente de la lavadora de fosfatizado",
-      "Contenedores  vacios metalicos  contaminados de pintura de aceite, aceite hidraulico y sello",
-      "Contenedores  vacios plasticos   contaminados de pintura de aceite y aceite hidraulico",
-      "Aceite Gastado  proveniente de los mantenimientos realizados a los equipos",
-      "Solventes Mezclados con base de thinner  provenientes de las actividades de limpieza y/o los mantenimientos realizados a los equipos .",
-      "Totes contaminados plásticos  con aceite hidraulico",
-      "Agua Contaminada con pintura proveniente de la aplicación a las carrocerías",
-      "Filtros contaminados con pigmentos y agua provenientes de la Planta Tratadora de Aguas Residuales",
-      "Sello Gastado: proveniente de la aplicación de sellos a carcazas",
-      "Residuos No Anatomicos : algodón, gasas,vendas ,sabanas,guantes provenientes de curaciones",
-      "Objetos Punzocortantes provenientes de procedimientos medicos : lancetas, agujas, bisturís.",
-      "Pilas Alcalinas",
-      "Baterias de equipos automotores",
-      "Lodos de Clara provenientes de residuos de casetas de pintura",
-      "Rebaba y Eslinga Metalica impregnada con aceite proveniente del mantenimiento a troqueles",
-      "Lamparas Flourescentes",
-      "Filtros contaminados con pigmentos y agua provenientes de la Planta de pintura",
-      "Contenedores vacios metálicos de gases refrigerantes",
-      "Catalizadores gastados de equipos automotores",
-      "Baterias automotrices de metal litio"
-    ],
-    nombreResiduoIngles: [
-      "Rags, gloves and textiles contaminated with hydraulic oil, paint, thinner and grease from cleaning, operation and maintenance activities.",
-      "Plastics contaminated with hydraulic oil and paint from cleaning and operation activities.",
-      "Paper contaminated with paint from bodywork refinishing activities",
-      "Empty metal drums contaminated with hydraulic oil, brake fluids and sealants",
-      "Empty plastic drums contaminated with potassium hydroxide based cleaners",
-      "Phosphatizing sludge from the phosphatizing washer",
-      "Empty metal containers contaminated with oil paint, hydraulic oil and seal",
-      "Empty plastic containers contaminated with oil paint, hydraulic oil and seals",
-      "Spent oil coming from the maintenance of the equipment",
-      "Thinner-based mixed solvents from cleaning activities and/or maintenance performed on equipment.",
-      "Contaminated plastic totes with hydraulic oil.",
-      "Water Contaminated with paint from the application of paint to bodywork.",
-      "Filters contaminated with pigments and water from the wastewater treatment plant.",
-      "Spent seal: from the application of seals to carcasses.",
-      "Non-anatomical waste: cotton, gauze, bandages, linens, gloves from treatments.",
-      "Sharps from medical procedures: lancets, needles, scalpels.",
-      "Alkaline batteries",
-      "Automotive equipment batteries",
-      "Clear sludge from paint booth wastes",
-      "Metal burrs and slings impregnated with oil from die maintenance",
-      "Flourescent lamps",
-      "Pigment and water contaminated filters from the paint plant",
-      "Empty metal refrigerant gas containers",
-      "Spent catalytic converters from automotive equipment",
-      "Automotive lithium metal batteries"
-    ],
-    tipoContenedor: ["Tambo", "Tote", "Tarima", "Paca", "Pieza"],
-    areaGeneracion: ["Assembly", "Paint", "Wielding", "utility", "Stamping"],
-    articulo71: ["Reciclaje", "Confinamiento", "Coprocesamiento"],
-    razonSocial: [
-      "Servicios Ambientales Internacionales S. de RL. De C.V.",
-      "ECO SERVICIOS PARA GAS SA. DE CV.",
-      "CONDUGAS DEL NORESTE, S.A DE C.V.",
-      "C. JAIME ISAAC MORENO VILLAREAL",
-      "LAURA MIREYA NAVARRO CEPEDA"
-    ],
-    autorizacionSemarnat: [
-      "19-I-030-D-19", 
-      "19-I-009D-18", 
-      "19-I-031D-19",
-      "5-27-PS-I-316D-11-2017",
-      "19-I-001D-16"
-    ],
-    autorizacionSct: [
-      "1938SAI07062011230301029",
-      "1938NACL29052015073601001",
-      "1938ESG28112011230301000",
-      "1938CNO08112011230301036",
-      "1938SAI07062011230301000",
-      "1938SAI07062011230301022",
-      "1938SAI07062011230301023",
-      "1938CACL13102022230303000",
+  // Opciones para los campos desplegables (inicialmente vacías)
+  const [opciones, setOpciones] = useState({
+    nombreResiduoEspanol: [],
+    nombreResiduoIngles: [],
+    tipoContenedor: [],
+    areaGeneracion: [],
+    articulo71: [],
+    razonSocial: [],
+    autorizacionSemarnat: [],
+    autorizacionSct: [],
+    razonSocialDestino: [],
+    autorizacionDestino: [],
+    responsableTecnico: []
+  });
 
-    ],
-    razonSocialDestino: [
-      "AQUAREC, SAPI de CV",
-      "Asfaltos Energex SA de CV",
-      "Barriles Metálicos, SA de CV",
-      "ECO SERVICIOS PARA GAS S.A. DE C.V.",
-      "ECOQUIM S.A DE C.V",
-      "ELÉCTRICA AUTOMOTRIZ OMEGA, SA de CV",
-      "Geocycle México, S.A. de C.V.",
-      "Maquiladora de Lubricantes S.A DE C.V.",
-      "PRO AMBIENTE, S.A. de C.V. (Planta Noreste)",
-      "RETALSA SA de CV",
-      "Roberto Arturo Muñoz del Río",
-      "Sociedad Ecológica Mexicana del Norte SA ",
-      "Veolia Soluciones Industriales México, SA de CV"
-    ],
-    autorizacionDestino: ["19-II-004D-2020", "19-21-PS-V-04-94", "19-IV-69-16"],
-    responsableTecnico: [
-      "Yolanda Martinez",
-      "Juan Perez",
-      "Maria Lopez",
-      "Yamileth Cuellar"
-    ]
-  };
+  // Lista de categorías a cargar
+  const categoriasOpciones = useMemo(() => [
+    'nombreResiduoEspanol',
+    'nombreResiduoIngles',
+    'tipoContenedor',
+    'areaGeneracion',
+    'articulo71',
+    'razonSocial',
+    'autorizacionSemarnat',
+    'autorizacionSct',
+    'razonSocialDestino',
+    'autorizacionDestino',
+    'responsableTecnico'
+  ], []);
+
+  // Cargar opciones dinámicamente al montar el componente
+  useEffect(() => {
+    const fetchOpciones = async () => {
+      const nuevasOpciones = {};
+      for (const categoria of categoriasOpciones) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/opciones/tipo/${categoria}`);
+          if (response.ok) {
+            const data = await response.json();
+            const valoresOrdenados = data
+              .sort((a, b) => a.orden - b.orden)
+              .map(item => item.valor);
+            nuevasOpciones[categoria] = valoresOrdenados;
+          } else {
+            nuevasOpciones[categoria] = [];
+          }
+        } catch (error) {
+          nuevasOpciones[categoria] = [];
+        }
+      }
+      setOpciones(nuevasOpciones);
+    };
+
+    fetchOpciones();
+  }, [categoriasOpciones]); // Ahora la referencia es estable
 
   // Definir campos requeridos
+  
   const camposRequeridos = useMemo(() => [
     'nombreResiduoEspanol',
     'nombreResiduoIngles',

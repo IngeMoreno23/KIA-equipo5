@@ -287,3 +287,28 @@
       width: 100%;
     }
   }
+
+.maximized-grafica {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  z-index: 1000;
+  margin: 0 !important;
+  padding: 32px 16px 16px 16px;
+  box-shadow: 0 0 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.maximized-grafica canvas {
+  /* Make the chart fill most of the available space */
+  width: 90vw !important;
+  height: 70vh !important;
+  max-width: 1200px;
+  max-height: 80vh;
+}

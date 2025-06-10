@@ -5,6 +5,7 @@ import Tablero from './pages/Tablero';
 import Home from './pages/Home';
 import RevisarResiduos from './pages/RevisarResiduos';
 import ManejarUsuarios from './pages/ManejarUsuarios';
+import UnityGame from './pages/UnityGame';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/RegistrarResiduo" element={<RegistrarResiduo />} />
           <Route path="/RevisarResiduos" element={<RevisarResiduos />} />
           <Route path="/ManejarUsuarios" element={<ManejarUsuarios />} />
+          <Route path="/UnityGame" element={<UnityGame />} />
         </Routes>
       </Router>
     </div>
