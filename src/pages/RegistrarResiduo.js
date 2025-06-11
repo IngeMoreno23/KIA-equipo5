@@ -7,14 +7,14 @@ import { getFilteredOptions } from '../utils/autoSuggestRules';
 import {
   handleAddRegister
 } from '../utils/registerHelpers';
-import RutaPrivada from '../components/RutaPrivada'; // <-- Importa RutaPrivada
+import RutaPrivada from '../components/RutaPrivada'; 
 
 function RegistroResiduo() {
-  const [submittedData, setSubmittedData] = useState(null); // 1. Add this line
+  const [setSubmittedData] = useState(null); 
   // Estado para los datos del formulario
   const [formData, setFormData] = useState({
     nombreResiduoEspanol: '',
-    nombreResiduoIngles: '', // <-- Added here
+    nombreResiduoIngles: '',
     tipoContenedor: '',
     cantidadGenerada: '',
     areaGeneracion: '',
@@ -512,7 +512,13 @@ function RegistroResiduo() {
   return (
     <div className="registro-container">
       <header className="header">
-        <div className="logo">KIA MOTORS</div>
+        <div className="logo">
+          <img
+            src={process.env.PUBLIC_URL + '/KIA_Logo_Black.png'}
+            alt="KIA Logo"
+            style={{ height: 96 }}
+          />
+        </div>
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
@@ -520,7 +526,7 @@ function RegistroResiduo() {
         </nav>
       </header>
 
-      <h1>Registro de Residuos</h1>
+      <h1>Registrar Residuos</h1>
 
       <form className="formulario-residuo" onSubmit={handleSubmit}>
         <h2>Residuo</h2>
@@ -576,52 +582,6 @@ function RegistroResiduo() {
           </button>
         </div>
       </form>
-
-      <footer className="footer">
-        <div className="site-name">
-          Site name
-          {submittedData && (
-            <div className="submitted-entries">
-              <h3>Entradas del formulario:</h3>
-              <ul>
-                {Object.entries(submittedData).map(([key, value]) => (
-                  <li key={key}>
-                    {key}: {value}
-                  </li>
-                ))}
-                <li>
-                  etiquetasSeleccionadas: {
-                    Object.entries(etiquetasSeleccionadas)
-                      .filter(([_, v]) => v)
-                      .map(([k]) => k)
-                      .join(', ') || 'Ninguna'
-                  }
-                </li>
-              </ul>
-            </div>
-          )}
-          </div>
-        <div className="topics">
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-        </div>
-      </footer>
       
 
       {/* Error Overlay - Modal Independiente */}

@@ -28,6 +28,10 @@ function TableroContent() {
     navigate('/ManejarUsuarios');
   };
 
+  const irAUnityGame = () => {
+    navigate('/UnityGame');
+  };
+
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   // Helper to render each graph with its maximize button below
@@ -67,9 +71,14 @@ function TableroContent() {
 
   return (
     <div className="tablero-container">
-      {/* Header */}
       <header className="header">
-        <div className="logo">KIA MOTORS</div>
+        <div className="logo">
+          <img
+            src={process.env.PUBLIC_URL + '/KIA_Logo_Black.jpg'}
+            alt="KIA Logo"
+            style={{ height: 96 }}
+          />
+        </div>
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
@@ -78,6 +87,7 @@ function TableroContent() {
               {localStorage.getItem('username')}
             </button>
           )}
+          <button className="btn-juego" onClick={irAUnityGame}>TriKia (Tutorial)</button>
         </nav>
       </header>
 
@@ -148,16 +158,6 @@ function TableroContent() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="site-name">Site name</div>
-        <div className="topics">
-          <div>Topic</div>
-          <div>Topic</div>
-          <div>Topic</div>
-        </div>
-      </footer>
     </div>
   );
 }

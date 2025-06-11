@@ -43,8 +43,8 @@ const GraficaBarra = ({ width = 400, height = 300, maximized = false, year, mont
             {
               label: 'Cantidad total por mes',
               data: values,
-              backgroundColor: 'rgba(54, 162, 235, 0.5)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: '#191970',
+              borderColor: '#191970',
               borderWidth: 1,
             },
           ],

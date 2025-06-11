@@ -531,7 +531,13 @@ function RevisarResiduosContent() {
   return (
     <div style={{ padding: '2rem' }}>
       <header className="header">
-        <div className="logo">KIA MOTORS</div>
+        <div className="logo">
+          <img
+            src={process.env.PUBLIC_URL + '/KIA_Logo_Black.jpg'}
+            alt="KIA Logo"
+            style={{ height: 96 }}
+          />
+        </div>
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
@@ -662,7 +668,7 @@ function RevisarResiduosContent() {
                           <button
                             onClick={() => handleEditClick(reg)}
                             style={{
-                              background: isEditing ? '#4caf50' : 'var(--primary-color)',
+                              background: isEditing ? '#191970' : 'var(--primary-color)',
                               color: '#fff',
                               border: 'none',
                               borderRadius: '4px',
@@ -676,7 +682,7 @@ function RevisarResiduosContent() {
                           <button
                             onClick={() => handleDeleteClick(reg)}
                             style={{
-                              background: '#e53935',
+                              background: 'rgba(30, 30, 30, 1)',
                               color: '#fff',
                               border: 'none',
                               borderRadius: '4px',

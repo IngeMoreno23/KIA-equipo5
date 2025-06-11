@@ -133,7 +133,13 @@ function ManejarUsuariosContent() {
   return (
     <div className="tablero-container">
       <header className="header">
-        <div className="logo">KIA MOTORS</div>
+        <div className="logo">
+          <img
+            src={process.env.PUBLIC_URL + '/KIA_Logo_Black.jpg'}
+            alt="KIA Logo"
+            style={{ height: 96 }}
+          />
+        </div>
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
@@ -146,14 +152,6 @@ function ManejarUsuariosContent() {
         {!showAddUser ? (
           <button
             className="btn-registrar"
-            style={{
-              background: '#0030b9',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '8px 16px',
-              cursor: 'pointer'
-            }}
             onClick={() => setShowAddUser(true)}
           >
             Crear nuevo usuario
@@ -184,7 +182,7 @@ function ManejarUsuariosContent() {
             <button
               className="btn-modificar"
               style={{
-                background: '#4caf50',
+                background: '#191970',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -198,7 +196,7 @@ function ManejarUsuariosContent() {
             <button
               className="btn-eliminar"
               style={{
-                background: '#e53935',
+                background: 'rgba(30, 30, 30, 1)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -247,7 +245,7 @@ function ManejarUsuariosContent() {
                       <button
                         className="btn-eliminar"
                         style={{
-                          background: '#e53935',
+                          background: 'rgba(30, 30, 30, 1)',
                           color: '#fff',
                           border: 'none',
                           borderRadius: '4px',
@@ -281,14 +279,6 @@ function ManejarUsuariosContent() {
         {!showAddOpcion ? (
           <button
             className="btn-registrar"
-            style={{
-              background: '#0030b9',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '8px 16px',
-              cursor: 'pointer'
-            }}
             onClick={() => setShowAddOpcion(true)}
           >
             Agregar nueva opción
@@ -319,7 +309,7 @@ function ManejarUsuariosContent() {
             <button
               className="btn-modificar"
               style={{
-                background: '#4caf50',
+                background: '#191970',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -333,7 +323,7 @@ function ManejarUsuariosContent() {
             <button
               className="btn-eliminar"
               style={{
-                background: '#e53935',
+                background: 'rgba(30, 30, 30, 1)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -409,7 +399,7 @@ function ManejarUsuariosContent() {
                       <button
                         className="btn-modificar"
                         style={{
-                          background: isEditing ? '#4caf50' : 'var(--primary-color)',
+                          background: isEditing ? '#191970' : 'var(--primary-color)',
                           color: '#fff',
                           border: 'none',
                           borderRadius: '4px',
@@ -424,7 +414,7 @@ function ManejarUsuariosContent() {
                         <button
                           className="btn-eliminar"
                           style={{
-                            background: '#e53935',
+                            background: 'rgba(30, 30, 30, 1)',
                             color: '#fff',
                             border: 'none',
                             borderRadius: '4px',
@@ -442,7 +432,7 @@ function ManejarUsuariosContent() {
                       <button
                         className="btn-eliminar"
                         style={{
-                          background: '#e53935',
+                          background: 'rgba(30, 30, 30, 1)',
                           color: '#fff',
                           border: 'none',
                           borderRadius: '4px',

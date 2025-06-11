@@ -48,13 +48,11 @@ const GraficaPieResponsable = ({ width = 400, height = 300, maximized = false, y
               label: 'Registros por Responsable',
               data: values,
               backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-                'rgba(255, 159, 64, 0.6)',
-                'rgba(199, 199, 199, 0.6)'
+                '#191970',
+                'rgb(0, 0, 0)',
+                'rgba(60, 60, 60, 0.6)',
+                'rgba(100, 100, 100, 0.6)',
+                'rgba(150, 150, 150, 0.6)',
               ],
               borderWidth: 1,
             },
