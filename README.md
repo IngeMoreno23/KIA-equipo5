@@ -2,6 +2,7 @@
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To make full use of this project, you must first run the backend (link: https://github.com/RafaelVH19/Equipo5-Backend) using nodemon app.js, downloading this project as a ZIP file, extracting it, running npm install, and then npm start.
 
 ## Available Scripts
 
