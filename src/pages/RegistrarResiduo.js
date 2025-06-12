@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './RegistrarResiduo.css';
 import { useNavigate } from 'react-router-dom';
+import CampoAutocompletado from '../components/CampoAutocompletado';
+import { applyAutoFillRules } from '../utils/autoFillRules';
+import { getFilteredOptions } from '../utils/autoSuggestRules';
+import {
+  handleAddRegister
+} from '../utils/registerHelpers';
+import RutaPrivada from '../components/RutaPrivada'; 
 
 function RegistroResiduo() {
-  const [submittedData, setSubmittedData] = useState(null); // 1. Add this line
+  const [setSubmittedData] = useState(null); 
   // Estado para los datos del formulario
   const [formData, setFormData] = useState({
     nombreResiduoEspanol: '',
-    nombreResiduoIngles: '', // <-- Added here
+    nombreResiduoIngles: '',
     tipoContenedor: '',
     cantidadGenerada: '',
     areaGeneracion: '',
@@ -56,31 +62,65 @@ function RegistroResiduo() {
   const [formularioTocado, setFormularioTocado] = useState(false);
   const [mostrarError, setMostrarError] = useState(false);
 
-  // Opciones para los campos desplegables
-  const opciones = {
-    nombreResiduoEspanol: ['Trapos y guantes contaminados con aceite hidráulico,pintura y thinner provenientes de actividades de limpieza y operación (T)', 'Sello Gastado: proveniente de la aplicación de sellos a carcazas (T)', 'Filtros contaminados con pigmentos  y agua provenientes de la Planta de pintura (T)', 'Solventes Mezclados con base de thinner  provenientes de las actividades de limpieza y/o los mantenimientos realizados a los equipos . ', 'Contenedores  vacios plasticos   contaminados de pintura de aceite y aceite hidraulico', 'Agua Contaminada con pintura proveniente de la aplicación a las carrocerías (T)'],
-    nombreResiduoIngles: [
-    'Rags and gloves contaminated with hydraulic oil, paint, and thinner from cleaning and operation activities (T)',
-    'Used seal: from the application of seals to casings (T)',
-    'Filters contaminated with pigments and water from the Paint Plant (T)',
-    'Mixed solvents based on thinner from cleaning activities and/or maintenance performed on equipment.',
-    'Empty plastic containers contaminated with oil paint and hydraulic oil',
-    'Water contaminated with paint from application to car bodies (T)'
-    ],
-    tipoContenedor: ['Tambo', 'Tote', 'Tarima', 'Paca', 'Pieza'],
-    areaGeneracion: ['Assembly', 'Paint', 'Wielding', "utility", "Stamping"],
-    articulo71: ['Reciclaje', 'Confinamiento', 'Coprocesamiento'],
-    razonSocial: ['Servicios Ambientales Internacionales S. de RL. De C.V.1', 'ECO SERVICIOS PARA GAS SA. DE CV.', 'CONDUGAS DEL NORESTE, S.A DE C.V.'],
-    autorizacionSemarnat: ["19-I-030-D-19", "19-I-009D-18", "19-I-031D-19"],
-    autorizacionSct: ["1938SAI07062011230301029", "1938NACL29052015073601001", "1938ESG28112011230301000", "1938CNO08112011230301036"],
-    razonSocialDestino: ['SERVICIOS AMBIENTALES INTERNACIONALES S DE RL DE CV', 'ECOQUIM, S.A. DE C.V. ', 'MAQUILADORA DE LUBRICANTES, S.A. DE C.V. '],
-    autorizacionDestino: ["19-II-004D-2020", "19-21-PS-V-04-94", "19-IV-69-16"],
-    responsableTecnico: ['Yolanda Martinez', 'Juan Perez','Maria Lopez',"Yamileth Cuellar"],
+  // Opciones para los campos desplegables (inicialmente vacías)
+  const [opciones, setOpciones] = useState({
+    nombreResiduoEspanol: [],
+    nombreResiduoIngles: [],
+    tipoContenedor: [],
+    areaGeneracion: [],
+    articulo71: [],
+    razonSocial: [],
+    autorizacionSemarnat: [],
+    autorizacionSct: [],
+    razonSocialDestino: [],
+    autorizacionDestino: [],
+    responsableTecnico: []
+  });
 
-  };
+  // Lista de categorías a cargar
+  const categoriasOpciones = useMemo(() => [
+    'nombreResiduoEspanol',
+    'nombreResiduoIngles',
+    'tipoContenedor',
+    'areaGeneracion',
+    'articulo71',
+    'razonSocial',
+    'autorizacionSemarnat',
+    'autorizacionSct',
+    'razonSocialDestino',
+    'autorizacionDestino',
+    'responsableTecnico'
+  ], []);
+
+  // Cargar opciones dinámicamente al montar el componente
+  useEffect(() => {
+    const fetchOpciones = async () => {
+      const nuevasOpciones = {};
+      for (const categoria of categoriasOpciones) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/opciones/tipo/${categoria}`);
+          if (response.ok) {
+            const data = await response.json();
+            const valoresOrdenados = data
+              .sort((a, b) => a.orden - b.orden)
+              .map(item => item.valor);
+            nuevasOpciones[categoria] = valoresOrdenados;
+          } else {
+            nuevasOpciones[categoria] = [];
+          }
+        } catch (error) {
+          nuevasOpciones[categoria] = [];
+        }
+      }
+      setOpciones(nuevasOpciones);
+    };
+
+    fetchOpciones();
+  }, [categoriasOpciones]); // Ahora la referencia es estable
 
   // Definir campos requeridos
-  const camposRequeridos = [
+  
+  const camposRequeridos = useMemo(() => [
     'nombreResiduoEspanol',
     'nombreResiduoIngles',
     'tipoContenedor',
@@ -94,7 +134,7 @@ function RegistroResiduo() {
     'razonSocialDestino',
     "autorizacionDestino",
     'responsableTecnico',
-  ];
+  ], []);
 
   // Estado para sugerencias de autocompletado
   const [sugerencias, setSugerencias] = useState([]);
@@ -107,8 +147,8 @@ function RegistroResiduo() {
   // Referencias para campos desplegables
   const dropdownRefs = useRef({});
 
-  // Validar formulario
-  const validarFormulario = () => {
+  // Validar formulario (usando useCallback para evitar warning en useEffect)
+  const validarFormulario = useCallback(() => {
     const nuevosErrores = {};
     let formularioValido = true;
     
@@ -121,7 +161,7 @@ function RegistroResiduo() {
     
     setCamposInvalidos(nuevosErrores);
     return formularioValido;
-  };
+  }, [formData, camposRequeridos, setCamposInvalidos]);
   
   // Verificar si hay al menos un campo inválido
   const hayErrores = () => {
@@ -131,27 +171,79 @@ function RegistroResiduo() {
   // Manejador de cambios para todos los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
+    // Si se selecciona un nombre en español, autoseleccionar el inglés correspondiente
+    if (name === "nombreResiduoEspanol") {
+      const index = opciones.nombreResiduoEspanol.findIndex(
+        (opcion) => opcion === value
+      );
+      setFormData((prev) => {
+        let next = {
+          ...prev,
+          [name]: value,
+          nombreResiduoIngles: index !== -1 ? opciones.nombreResiduoIngles[index] : "",
+        };
+        next = applyAutoFillRules(name, value, next, opciones);
+        return next;
+      });
+      setFormularioTocado(true);
+      if (camposInvalidos[name] && value.trim() !== "") {
+        const nuevosErrores = { ...camposInvalidos };
+        delete nuevosErrores[name];
+        setCamposInvalidos(nuevosErrores);
+      }
+      if (opciones[name]) {
+        const filtradas = opciones[name].filter(
+          (opcion) => opcion.toLowerCase().includes(value.toLowerCase())
+        );
+        setSugerencias(filtradas);
+        setCampoActivo(name);
+        setMostrarSugerencias(true);
+      }
+      return;
+    }
+
+    // Si se selecciona razonSocial, autocompletar autorizacionSemarnat
+    if (name === "razonSocial") {
+      setFormData((prev) => {
+        let next = {
+          ...prev,
+          [name]: value,
+        };
+        next = applyAutoFillRules(name, value, next, opciones);
+        return next;
+      });
+      setFormularioTocado(true);
+      if (camposInvalidos[name] && value.trim() !== "") {
+        const nuevosErrores = { ...camposInvalidos };
+        delete nuevosErrores[name];
+        setCamposInvalidos(nuevosErrores);
+      }
+      if (opciones[name]) {
+        const filtradas = opciones[name].filter(
+          (opcion) => opcion.toLowerCase().includes(value.toLowerCase())
+        );
+        setSugerencias(filtradas);
+        setCampoActivo(name);
+        setMostrarSugerencias(true);
+      }
+      return;
+    }
+
     // Actualizar el formulario
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
-    
-    // Marcar formulario como tocado
     setFormularioTocado(true);
-    
-    // Si era un campo inválido, verificar si ahora es válido
-    if (camposInvalidos[name] && value.trim() !== '') {
+    if (camposInvalidos[name] && value.trim() !== "") {
       const nuevosErrores = { ...camposInvalidos };
       delete nuevosErrores[name];
       setCamposInvalidos(nuevosErrores);
     }
-
-    // Si es un campo con autocompletado, actualizar sugerencias
     if (opciones[name]) {
       const filtradas = opciones[name].filter(
-        opcion => opcion.toLowerCase().includes(value.toLowerCase())
+        (opcion) => opcion.toLowerCase().includes(value.toLowerCase())
       );
       setSugerencias(filtradas);
       setCampoActivo(name);
@@ -161,18 +253,59 @@ function RegistroResiduo() {
 
   // Seleccionar una sugerencia
   const seleccionarSugerencia = (sugerencia) => {
+    // Si se selecciona un nombre en español, autoseleccionar el inglés correspondiente
+    if (campoActivo === "nombreResiduoEspanol") {
+      const index = opciones.nombreResiduoEspanol.findIndex(
+        (opcion) => opcion === sugerencia
+      );
+      setFormData((prev) => {
+        let next = {
+          ...prev,
+          [campoActivo]: sugerencia,
+          nombreResiduoIngles: index !== -1 ? opciones.nombreResiduoIngles[index] : "",
+        };
+        next = applyAutoFillRules(campoActivo, sugerencia, next, opciones);
+        return next;
+      });
+      if (camposInvalidos[campoActivo]) {
+        const nuevosErrores = { ...camposInvalidos };
+        delete nuevosErrores[campoActivo];
+        setCamposInvalidos(nuevosErrores);
+      }
+      setMostrarSugerencias(false);
+      setFormularioTocado(true);
+      return;
+    }
+
+    // Si se selecciona razonSocial, autocompletar autorizacionSemarnat
+    if (campoActivo === "razonSocial") {
+      setFormData((prev) => {
+        let next = {
+          ...prev,
+          [campoActivo]: sugerencia,
+        };
+        next = applyAutoFillRules(campoActivo, sugerencia, next, opciones);
+        return next;
+      });
+      if (camposInvalidos[campoActivo]) {
+        const nuevosErrores = { ...camposInvalidos };
+        delete nuevosErrores[campoActivo];
+        setCamposInvalidos(nuevosErrores);
+      }
+      setMostrarSugerencias(false);
+      setFormularioTocado(true);
+      return;
+    }
+
     setFormData({
       ...formData,
-      [campoActivo]: sugerencia
+      [campoActivo]: sugerencia,
     });
-    
-    // Actualizar validación
     if (camposInvalidos[campoActivo]) {
       const nuevosErrores = { ...camposInvalidos };
       delete nuevosErrores[campoActivo];
       setCamposInvalidos(nuevosErrores);
     }
-    
     setMostrarSugerencias(false);
     setFormularioTocado(true);
   };
@@ -213,7 +346,7 @@ function RegistroResiduo() {
     if (formularioTocado) {
       validarFormulario();
     }
-  }, [formData, formularioTocado]);
+  }, [formData, formularioTocado, validarFormulario]);
 
   // Manejar envío del formulario
   const handleSubmit = (e) => {
@@ -244,272 +377,39 @@ function RegistroResiduo() {
     setFormularioTocado(true);
   };
 
-  const handleAddTransporter = async () => {
-    try {
-      const searchPayload = { transporter_name: formData.razonSocial };
-      const searchRes = await axios.post('http://localhost:3001/api/transporter/buscar', searchPayload);
-
-      let transporterId;
-
-      if (searchRes.data === 0) {
-        const createPayload = {
-          transporter_name: formData.razonSocial,
-          authorization_semarnat: formData.autorizacionSemarnat,
-          authorization_sct: formData.autorizacionSct,
-          active: true
-        };
-        const createRes = await axios.post('http://localhost:3001/api/transporter', createPayload);
-        transporterId = createRes.data.id ?? createRes.data.transporter_id ?? createRes.data;
-        // No confirmation alert
-      } else {
-        transporterId = searchRes.data.transporter_id;
-        // No confirmation alert
-      }
-
-      return transporterId;
-
-    } catch (error) {
-      alert('Error al agregar o buscar transportista');
-      console.error(error);
-      return null;
-    }
-  };
-
-  const handleAddReceptor = async () => {
-    try {
-      const searchPayload = { name_reason: formData.razonSocialDestino };
-      let searchRes;
-      try {
-        searchRes = await axios.post('http://localhost:3001/api/receptor/buscar', searchPayload);
-      } catch (searchError) {
-        alert('Error al buscar receptor. Intente de nuevo.');
-        console.error('Error en búsqueda de receptor:', searchError);
-        return null;
-      }
-
-      let receptorId;
-
-      if (searchRes.data === 0) {
-        const createPayload = {
-          name_reason: formData.razonSocialDestino,
-          auth: formData.autorizacionDestino,
-          active: true
-        };
-        const createRes = await axios.post('http://localhost:3001/api/receptor', createPayload);
-        receptorId = createRes.data.id ?? createRes.data.receptor_id ?? createRes.data;
-        // No confirmation alert
-      } else {
-        receptorId = searchRes.data.receptor_id;
-        // No confirmation alert
-      }
-
-      return receptorId;
-
-    } catch (error) {
-      alert('Error al agregar o buscar receptor');
-      console.error(error);
-      return null;
-    }
-  };
-
-  const handleAddArea = async () => {
-    try {
-      const searchPayload = { area: formData.areaGeneracion };
-      const searchRes = await axios.post('http://localhost:3001/api/area/buscar', searchPayload);
-
-      let areaId;
-
-      if (searchRes.data === 0) {
-        const createPayload = {
-          area: formData.areaGeneracion
-        };
-        const createRes = await axios.post('http://localhost:3001/api/area', createPayload);
-        areaId = createRes.data.id ?? createRes.data.area_id ?? createRes.data;
-        // No confirmation alert
-      } else {
-        areaId = searchRes.data.area_id;
-        // No confirmation alert
-      }
-
-      return areaId;
-
-    } catch (error) {
-      alert('Error al agregar o buscar área');
-      console.error(error);
-      return null;
-    }
-  };
-
-  const handleAddContainer = async () => {
-    try {
-      const searchPayload = { type: formData.tipoContenedor };
-      const searchRes = await axios.post('http://localhost:3001/api/container/buscar', searchPayload);
-
-      let containerId;
-
-      if (searchRes.data === 0) {
-        const createPayload = {
-          type: formData.tipoContenedor
-        };
-        const createRes = await axios.post('http://localhost:3001/api/container', createPayload);
-        containerId = createRes.data.id ?? createRes.data.container_id ?? createRes.data;
-        // No confirmation alert
-      } else {
-        containerId = searchRes.data.container_id;
-        // No confirmation alert
-      }
-
-      return containerId;
-
-    } catch (error) {
-      alert('Error al agregar o buscar contenedor');
-      console.error(error);
-      return null;
-    }
-  };
-
-  const handleAddDangerousWaste = async () => {
-    try {
-      // Buscar o crear contenedor
-      let containerId = await handleAddContainer();
-      if (!containerId) throw new Error('No se pudo obtener el ID del contenedor');
-
-      // Buscar o crear área
-      let areaId = await handleAddArea();
-      if (!areaId) throw new Error('No se pudo obtener el ID del área');
-
-      const searchPayload = {
-        name_spanish: formData.nombreResiduoEspanol,
-        article: formData.articulo71,
-        container_id: containerId,
-        area_id: areaId,
-      };
-      const searchRes = await axios.post('http://localhost:3001/api/dangerous_waste/buscar', searchPayload);
-
-      let dangerousWasteId;
-
-      if (searchRes.data === 0) {
-        const createPayload = {
-          name_spanish: formData.nombreResiduoEspanol,
-          name_english: formData.nombreResiduoIngles,
-          article: formData.articulo71,
-          container_id: containerId,
-          area_id: areaId,
-          field_c: etiquetasSeleccionadas.C,
-          field_r: etiquetasSeleccionadas.R,
-          field_e: etiquetasSeleccionadas.E,
-          field_t: etiquetasSeleccionadas.T,
-          field_te: etiquetasSeleccionadas.Te,
-          field_th: etiquetasSeleccionadas.Th,
-          field_tt: etiquetasSeleccionadas.Tt,
-          field_i: etiquetasSeleccionadas.I,
-          field_b: etiquetasSeleccionadas.B,
-          field_m: etiquetasSeleccionadas.M
-        };
-        const createRes = await axios.post('http://localhost:3001/api/dangerous_waste', createPayload);
-        dangerousWasteId = createRes.data.id ?? createRes.data.dw_id ?? createRes.data;
-        // No confirmation alert
-      } else {
-        dangerousWasteId = searchRes.data.dw_id;
-        // No confirmation alert
-      }
-
-      return dangerousWasteId;
-
-    } catch (error) {
-      alert('Error al agregar o buscar residuo peligroso');
-      console.error(error);
-      return null;
-    }
-  };
-
-  // Utilidad para formatear fechas a 'YYYY-MM-DD'
-  function formatDate(dateStr) {
-    if (!dateStr) return null;
-    // Si ya está en formato correcto, regresa igual
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    const date = new Date(dateStr);
-    if (isNaN(date)) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  // Handler para agregar registro a la tabla registers
-  const handleAddRegister = async () => {
-    try {
-      // Obtener IDs necesarios automáticamente
-      const dwId = await handleAddDangerousWaste();
-      if (!dwId) throw new Error('No se pudo obtener el ID del residuo peligroso');
-
-      const transporterId = await handleAddTransporter();
-      if (!transporterId) throw new Error('No se pudo obtener el ID del transportista');
-
-      const receptorId = await handleAddReceptor();
-      if (!receptorId) throw new Error('No se pudo obtener el ID del receptor');
-
-      const payload = {
-        waste_date: new Date().toISOString().slice(0, 10), // Fecha actual en formato YYYY-MM-DD
-        responsible: formData.responsableTecnico,
-        dw_id: dwId,
-        transporter_id: transporterId,
-        receptor_id: receptorId,
-        quantity: parseFloat(formData.cantidadGenerada),
-        date_in: formatDate(formData.fechaIngreso),
-        date_out: formatDate(formData.fechaSalida)
-      };
-
-      const res = await axios.post('http://localhost:3001/api/register', payload);
-      const registerId = res.data.id ?? res.data.register_id ?? res.data;
-      alert('Registro agregado correctamente. Nuevo ID: ' + registerId);
-      // Aquí puedes usar registerId como necesites
-    } catch (error) {
-      alert('Error al agregar registro');
-      console.error(error);
-    }
-  };
-
   // Renderizar campo con autocompletado
-  const renderCampoAutocompletado = (nombre, label) => {
+  const renderCampoAutocompletado = (nombre, label, opcionesCampo) => {
     const esRequerido = camposRequeridos.includes(nombre);
     const esInvalido = camposInvalidos[nombre];
-    
+
+    // Use filtered options if a rule applies
+    const opcionesFiltradas = getFilteredOptions(nombre, formData, opciones);
+
     return (
-      <div className={`form-group ${esInvalido ? 'invalid-field' : ''}`}>
-        <label htmlFor={nombre}>
-          {label}{esRequerido ? ' *' : ''}
-        </label>
-        <div className="autocomplete">
-          <input
-            type="text"
-            id={nombre}
-            name={nombre}
-            value={formData[nombre]}
-            onChange={handleChange}
-            className={esInvalido ? 'input-invalid' : ''}
-            onFocus={() => {
-              setCampoActivo(nombre);
-              if (opciones[nombre]) {
-                setSugerencias(opciones[nombre]);
-              } else {
-                setSugerencias([]);
-              }
-              setMostrarSugerencias(true);
-            }}
-          />
-          {esInvalido && <div className="error-message">Campo requerido</div>}
-          {mostrarSugerencias && campoActivo === nombre && sugerencias.length > 0 && (
-            <div className="autocomplete-items">
-              {sugerencias.map((item, index) => (
-                <div key={index} onClick={() => seleccionarSugerencia(item)}>
-                  {item}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <CampoAutocompletado
+        nombre={nombre}
+        label={label}
+        opcionesCampo={opcionesCampo}
+        esRequerido={esRequerido}
+        esInvalido={esInvalido}
+        value={formData[nombre]}
+        onChange={handleChange}
+        onFocus={() => {
+          setCampoActivo(nombre);
+          if (opcionesFiltradas.length > 0) {
+            setSugerencias(opcionesFiltradas);
+          } else if (opcionesCampo) {
+            setSugerencias(opcionesCampo);
+          } else {
+            setSugerencias([]);
+          }
+          setMostrarSugerencias(true);
+        }}
+        sugerencias={sugerencias}
+        mostrarSugerencias={mostrarSugerencias}
+        campoActivo={campoActivo}
+        seleccionarSugerencia={seleccionarSugerencia}
+      />
     );
   };
 
@@ -612,7 +512,13 @@ function RegistroResiduo() {
   return (
     <div className="registro-container">
       <header className="header">
-        <div className="logo">KIA MOTORS</div>
+        <div className="logo">
+          <img
+            src={process.env.PUBLIC_URL + '/KIA_Logo_Black.png'}
+            alt="KIA Logo"
+            style={{ height: 96 }}
+          />
+        </div>
         <nav className="nav">
           <button className="btn-modificar" onClick={irARevisarResiduos}>Mostrar Residuos</button>
           <button className="btn-registrar" onClick={irARegistroResiduo}>Registrar Residuo</button>
@@ -620,13 +526,12 @@ function RegistroResiduo() {
         </nav>
       </header>
 
-      <h1>Registro de Residuos</h1>
+      <h1>Registrar Residuos</h1>
 
       <form className="formulario-residuo" onSubmit={handleSubmit}>
         <h2>Residuo</h2>
         
         {renderCampoAutocompletado('nombreResiduoEspanol', 'Nombre del Residuo (Español)', opciones.nombreResiduoEspanol)}
-        {/* New field for English name */}
         {renderCampoAutocompletado('nombreResiduoIngles', 'Nombre del residuo (Inglés)', opciones.nombreResiduoIngles)}
         {renderCampoAutocompletado('tipoContenedor', 'Tipo de contenedor', opciones.tipoContenedor)}
         {renderCampo('cantidadGenerada', 'Cantidad generada (toneladas)', 'number')}
@@ -654,7 +559,11 @@ function RegistroResiduo() {
         <h2>Transportista</h2>
         {renderCampoAutocompletado('razonSocial', 'Nombre, denominación o razón social', opciones.razonSocial)}
         {renderCampoDesplegable('autorizacionSemarnat', 'Número de autorización SEMARNAT', opciones.autorizacionSemarnat)}
-        {renderCampoDesplegable('autorizacionSct', 'Número de autorización SCT', opciones.autorizacionSct)}
+        {renderCampoDesplegable(
+          'autorizacionSct',
+          'Número de autorización SCT',
+          getFilteredOptions('autorizacionSct', formData, opciones)
+        )}
         
         <h2>Receptor/Destino</h2>
         {renderCampoAutocompletado('razonSocialDestino', 'Nombre, denominación o razón social', opciones.razonSocialDestino)}
@@ -667,65 +576,13 @@ function RegistroResiduo() {
           <button 
             type="button" 
             className={`btn-registrar-form ${hayErrores() ? 'btn-disabled' : ''}`}
-            onClick={handleAddRegister}
+            onClick={() => handleAddRegister(formData, etiquetasSeleccionadas)}
           >
             Registrar
           </button>
         </div>
       </form>
-
-      <footer className="footer">
-        <div className="site-name">
-          Site name
-          {submittedData && (
-            <div className="submitted-entries">
-              <h3>Entradas del formulario:</h3>
-              <ul>
-                {Object.entries(submittedData).map(([key, value]) => (
-                  <li key={key}>
-                    {key}: {value}
-                  </li>
-                ))}
-                <li>
-                  etiquetasSeleccionadas: {
-                    Object.entries(etiquetasSeleccionadas)
-                      .filter(([_, v]) => v)
-                      .map(([k]) => k)
-                      .join(', ') || 'Ninguna'
-                  }
-                </li>
-              </ul>
-            </div>
-          )}
-          </div>
-        <div className="topics">
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-          <div className="topic-column">
-            <div>Topic</div>
-            <div>Page</div>
-            <div>Page</div>
-            <div>Page</div>
-          </div>
-        </div>
-      </footer>
       
-      <div className="social-icons">
-        <a href="#"><i className="fab fa-facebook-f"></i></a>
-        <a href="#"><i className="fab fa-twitter"></i></a>
-        <a href="#"><i className="fab fa-youtube"></i></a>
-        <a href="#"><i className="fab fa-instagram"></i></a>
-      </div>
 
       {/* Error Overlay - Modal Independiente */}
       {mostrarError && (
@@ -749,4 +606,10 @@ function RegistroResiduo() {
   );
 }
 
-export default RegistroResiduo;
+export default function RegistrarResiduo() {
+  return (
+    <RutaPrivada>
+      <RegistroResiduo />
+    </RutaPrivada>
+  );
+}

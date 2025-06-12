@@ -1,8 +1,8 @@
 /* Variables globales */
 :root {
-    --primary-color: #0030b9;
+    --primary-color: #191970;
     --secondary-color: #e0e0e0;
-    --accent-color: #003366;
+    --accent-color: #002346;
     --bg-color: #f5f5f7;
     --text-color: #333;
     --border-radius: 8px;
@@ -31,7 +31,7 @@
   .tablero-container {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 40px;
     min-height: 100vh;
     overflow: auto;
   }
@@ -77,6 +77,53 @@
   
   .btn-modificar:hover, .btn-registrar:hover {
     opacity: 0.9;
+  }
+  
+  .btn-admin {
+    background-color: #000;
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-weight:400;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .btn-admin:hover {
+    background-color: #000;
+    opacity: 0.95;
+  }
+
+  .btn-juego {
+    background-color: var(--primary-color); /* Color para el botón de juego */
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-weight: 400;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0;
+  }
+
+  .btn-juego:hover {
+    background-color: darken(var(--primary-color), 5%); /* Color más oscuro al pasar el mouse */
+    opacity: 0.95;
   }
   
   /* Contenido principal */
@@ -196,7 +243,7 @@
     width: 24px;
     height: 24px;
     margin-right: 10px;
-    background-color: #4CAF50; /* Color para Excel, puedes variar */
+    background-color: #191970; /* Color para Excel, puedes variar */
     border-radius: 4px;
   }
   
@@ -263,3 +310,28 @@
       width: 100%;
     }
   }
+
+.maximized-grafica {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  z-index: 1000;
+  margin: 0 !important;
+  padding: 32px 16px 16px 16px;
+  box-shadow: 0 0 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.maximized-grafica canvas {
+  /* Make the chart fill most of the available space */
+  width: 90vw !important;
+  height: 70vh !important;
+  max-width: 1200px;
+  max-height: 80vh;
+}

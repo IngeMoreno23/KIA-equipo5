@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
@@ -10,11 +10,19 @@ function Home() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:3001/api/login', { email, contraseña });
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('isAdmin', res.data.is_admin);
+      localStorage.setItem('username', res.data.nombre);
+      const username = localStorage.getItem('username');
+      await axios.post('http://localhost:3001/api/logs', { username, log_action: 'Login' });
       navigate('/tablero');
     } catch (err) {
       setError('Credenciales inválidas');

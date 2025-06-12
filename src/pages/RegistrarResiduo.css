@@ -51,7 +51,7 @@ body {
 }
 
 .btn-registrar {
-  background-color: #0000ff;
+  background-color: #191970;
   color: white;
 }
 
@@ -193,9 +193,9 @@ input[type="date"],
 }
 
 .select-option.option-selected .checkbox {
-  background-color: #0000ff;
+  background-color: #191970;
   color: white;
-  border-color: #0000ff;
+  border-color: #191970;
 }
 
 .select-items div:hover {
@@ -218,7 +218,7 @@ input[type="date"],
 .otros-field input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #0000ff;
+  border: 1px solid #191970;
   border-radius: 4px;
   background-color: #f5f8ff;
 }
@@ -271,15 +271,15 @@ input[type="date"],
 }
 
 .etiqueta-item:hover {
-  border-color: #0000ff;
+  border-color: #191970;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .etiqueta-selected {
-  background-color: #0000ff;
+  background-color: #191970;
   color: white;
-  border-color: #0000ff;
-  box-shadow: 0 2px 5px rgba(0,0,255,0.3);
+  border-color: #191970;
+  box-shadow: 0 2px 5px rgba(25, 25, 112, 0.3);
 }
 
 /* Botón de registro */
